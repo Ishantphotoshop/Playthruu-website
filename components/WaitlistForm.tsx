@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { joinWaitlist } from "@/app/actions";
 
 export default function WaitlistForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
@@ -13,15 +13,14 @@ export default function WaitlistForm() {
     if (typeof email !== "string") return;
 
     setStatus("submitting");
-    const { error } = await supabase.from("waitlist").insert({ email });
+    const result = await joinWaitlist(email);
 
-    if (!error || error.code === "23505") {
-      // 23505 = unique_violation (already on the list) — treat as success.
+    if (result.ok) {
       setStatus("done");
       return;
     }
     setStatus("error");
-    setErrorMessage(error.message);
+    setErrorMessage(result.message);
   }
 
   if (status === "done") {
