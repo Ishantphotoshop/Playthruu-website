@@ -1,160 +1,101 @@
 import CountdownTimer from "@/components/CountdownTimer";
+import WaitlistForm from "@/components/WaitlistForm";
+import Reveal from "@/components/Reveal";
 
 const features = [
-  {
-    title: "Discover",
-    desc: "Surface your next game before everyone else finds it.",
-  },
-  { title: "Rate", desc: "Score what you played, on your own terms." },
-  {
-    title: "Review",
-    desc: "Say what you actually thought, no fluff required.",
-  },
-  { title: "Track", desc: "Every game you have played, in one running log." },
-  {
-    title: "Connect",
-    desc: "Follow players whose taste actually matches yours.",
-  },
+  ["01", "Keep the record", "Your backlog, finished games, drops, and all the little stories between them."],
+  ["02", "Find your people", "Follow players with taste you trust, not a feed tuned to keep you scrolling."],
+  ["03", "Make the next pick", "A living map of what you loved, what you missed, and what deserves your time next."],
 ];
+
+const tickerWords = ["DISCOVER", "TRACK", "RATE", "CONNECT", "REMEMBER"];
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(124,58,237,0.15),transparent_60%)]" />
-        <span className="relative text-xs tracking-[0.3em] text-[#A78BFA] font-mono mb-6">
-          LAUNCHING SEP 12 2026
-        </span>
-        <h1 className="relative font-display text-6xl md:text-8xl font-bold tracking-tight">
-          PLAYTHRUU
-        </h1>
-        <p className="relative mt-4 text-lg md:text-2xl text-gray-300 font-display">
-          Your Gaming Journey.
-        </p>
-        <p className="relative mt-3 text-sm md:text-base text-gray-500 max-w-md">
-          Discover games. Track what you play. Share your story.
-        </p>
-        <div className="relative mt-10 flex gap-4">
-          <a
-            href="#waitlist"
-            className="px-6 py-3 rounded-full bg-[#7C3AED] text-white font-medium hover:bg-[#6D28D9] transition"
-          >
-            Join the Waitlist
-          </a>
-          <a
-            href="#what-is"
-            className="px-6 py-3 rounded-full border border-white/20 text-gray-200 font-medium hover:border-white/50 transition"
-          >
-            Learn More
-          </a>
+    <main>
+      <nav className="site-nav" aria-label="Main navigation">
+        <a href="#top" className="brand-mark"><span>+</span> PLAYTHRUU</a>
+        <div className="hidden md:flex items-center gap-8">
+          <a href="#inside" className="nav-link">How it works</a>
+          <a href="#why" className="nav-link">Why PlayThruu</a>
+        </div>
+        <a href="#waitlist" className="nav-cta">Early access <span>▶</span></a>
+      </nav>
+
+      <section id="top" className="hero section-wrap">
+        <div className="hero-copy">
+          <p className="eyebrow"><span className="live-dot" /> System online — for people who play all the way through</p>
+          <h1>Your games.<br /><em>Your</em> story.</h1>
+          <p className="hero-lede">PlayThruu is the home for your gaming life: a place to log the journey, find your next obsession, and share the moments worth remembering.</p>
+          <div className="hero-actions">
+            <a href="#waitlist" className="button button-primary">Join the waitlist <span>▶</span></a>
+            <a href="#inside" className="text-link">See how it works <span>↓</span></a>
+          </div>
+          <p className="launch-note"><span>12.09.26</span> Launching soon, starting with the people who care about their backlog.</p>
+        </div>
+        <div className="hero-art" aria-label="A preview of a PlayThruu save file">
+          <div className="orbit orbit-one" /><div className="orbit orbit-two" />
+          <div className="profile-card">
+            <div className="profile-top"><span className="tiny-label">SAVE SLOT 01</span><span className="profile-menu">•••</span></div>
+            <div className="avatar">J</div>
+            <h2>julesm</h2><p className="profile-sub">Currently playing <strong>Metaphor: ReFantazio</strong></p>
+            <div className="stats"><div><strong>184</strong><span>PLAYED</span></div><div><strong>27</strong><span>THIS YEAR</span></div><div><strong>4.8</strong><span>AVG RATING</span></div></div>
+            <div className="now-playing"><div className="game-art"><span>METAPHOR</span></div><div><span className="tiny-label">IN PROGRESS</span><strong>Metaphor:<br />ReFantazio</strong><small>34 hours logged</small></div><span className="progress">68%</span></div>
+          </div>
+          <div className="floating-note note-one"><span>✦</span> 12 friends played this</div>
+          <div className="floating-note note-two">YOUR 2026 <strong>IN GAMES</strong></div>
         </div>
       </section>
 
-      <section
-        id="what-is"
-        className="px-6 py-24 md:py-32 max-w-3xl mx-auto text-center"
-      >
-        <h2 className="font-display text-3xl md:text-4xl font-semibold">
-          Your gaming life, in one place.
-        </h2>
-        <p className="mt-6 text-gray-400 text-base md:text-lg leading-relaxed">
-          Most people who play games are also the people talking about games,
-          comparing notes, chasing recommendations, keeping tabs on what
-          everyone else is into. PlayThruu is where that actually lives: one
-          running record of what you have played, what you thought, and what is
-          next.
-        </p>
-      </section>
-
-      <section className="px-6 py-16 md:py-24 max-w-5xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-          {features.map(function (f) {
+      <div className="ticker" aria-hidden="true">
+        <div className="ticker-track">
+          {[0, 1].map(function (rep) {
             return (
-              <div
-                key={f.title}
-                className="bg-[#171722] border border-white/5 rounded-2xl p-5 md:p-6 hover:border-[#7C3AED]/40 transition"
-              >
-                <h3 className="font-display text-lg font-semibold text-[#A78BFA]">
-                  {f.title}
-                </h3>
-                <p className="mt-2 text-sm text-gray-500 leading-snug">
-                  {f.desc}
-                </p>
+              <div className="ticker-set" key={rep}>
+                {tickerWords.map(function (word) {
+                  return (
+                    <span className="ticker-item" key={word + rep}>
+                      <span>{word}</span><b>›</b>
+                    </span>
+                  );
+                })}
               </div>
             );
           })}
         </div>
+      </div>
+
+      <section id="inside" className="section-wrap intro-section">
+        <div className="section-kicker">01 THE PROBLEM</div>
+        <Reveal className="intro-grid"><h2>A better place<br />for your <em>backlog.</em></h2><p>Games are more than a pile of titles you own. They are weekends, recommendations, rabbit holes, and the stories you keep retelling. PlayThruu gives all of that a home.</p></Reveal>
       </section>
 
-      <section className="px-6 py-24 md:py-32 max-w-4xl mx-auto text-center">
-        <h2 className="font-display text-3xl md:text-4xl font-semibold">
-          A look inside.
-        </h2>
-        <div className="mt-10 aspect-video rounded-2xl bg-[#171722] border border-white/10 flex items-center justify-center">
-          <span className="text-gray-600 font-mono text-sm">
-            App preview coming soon
-          </span>
-        </div>
-      </section>
-
-      <section className="px-6 py-24 md:py-32 max-w-3xl mx-auto text-center">
-        <h2 className="font-display text-3xl md:text-4xl font-semibold">
-          Not a store. Not a wiki. Yours.
-        </h2>
-        <p className="mt-6 text-gray-400 text-base md:text-lg leading-relaxed">
-          Game stores want you to buy. Review sites want you to scroll.
-          PlayThruu is built around one persons actual history with games, what
-          you have finished, what you dropped, and what you would tell a friend
-          to play next.
-        </p>
+      <section id="why" className="section-wrap feature-section">
+        <Reveal className="section-heading"><div className="section-kicker">02 BUILT FOR THE JOURNEY</div><h2>Keep playing.<br /><em>Keep the receipts.</em></h2></Reveal>
+        <div className="feature-grid">{features.map(function (feature, i) {
+          const edgeClass = i === 0 ? " feature-item-first" : "";
+          return (
+            <Reveal key={feature[0]} delay={i * 90}>
+              <article className={"feature-item" + edgeClass}>
+                <span className="feature-badge">{feature[0]}</span>
+                <span className="unlock-tag">UNLOCKED</span>
+                <h3>{feature[1]}</h3>
+                <p>{feature[2]}</p>
+              </article>
+            </Reveal>
+          );
+        })}</div>
       </section>
 
       <section
         id="waitlist"
-        className="px-6 py-24 md:py-32 max-w-3xl mx-auto text-center"
+        className="waitlist-section section-wrap"
       >
-        <h2 className="font-display text-3xl md:text-4xl font-semibold">
-          Coming Soon
-        </h2>
-        <p className="mt-4 text-gray-500">
-          PlayThruu launches September 12, 2026.
-        </p>
-
-        <div className="mt-8 flex justify-center">
-          <CountdownTimer />
-        </div>
-
-        <form className="mt-10 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-          <input
-            type="email"
-            placeholder="your@email.com"
-            className="flex-1 px-4 py-3 rounded-full bg-[#171722] border border-white/10 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#7C3AED] transition"
-          />
-          <button
-            type="submit"
-            className="px-6 py-3 rounded-full bg-[#7C3AED] text-white font-medium hover:bg-[#6D28D9] transition whitespace-nowrap"
-          >
-            Join the Waitlist
-          </button>
-        </form>
+        <Reveal><div className="section-kicker">03 SAVE YOUR SLOT</div><h2>Insert coin.<br /><em>Continue your story.</em></h2><p>Save your spot — be there when your gaming life gets a proper home.</p></Reveal>
+        <div className="waitlist-side"><CountdownTimer /><WaitlistForm /></div>
       </section>
 
-      <footer className="px-6 py-10 border-t border-white/5">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600">
-          <span className="font-display text-white">PLAYTHRUU</span>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-gray-300 transition">
-              Twitter
-            </a>
-            <a href="#" className="hover:text-gray-300 transition">
-              Instagram
-            </a>
-            <a href="#" className="hover:text-gray-300 transition">
-              Discord
-            </a>
-          </div>
-          <span>© 2026 PlayThruu</span>
-        </div>
+      <footer className="site-footer"><span className="brand-mark"><span>+</span> PLAYTHRUU</span><span>Made for the long haul.</span><span>© 2026</span>
       </footer>
     </main>
   );

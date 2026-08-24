@@ -14,11 +14,17 @@ function getTimeLeft() {
   };
 }
 
+const UNITS = [
+  { key: "days", label: "DAYS" },
+  { key: "hours", label: "HRS" },
+  { key: "minutes", label: "MIN" },
+  { key: "seconds", label: "SEC" },
+] as const;
+
 export default function CountdownTimer() {
   const [time, setTime] = useState<ReturnType<typeof getTimeLeft> | null>(null);
 
   useEffect(() => {
-    setTime(getTimeLeft());
     const interval = setInterval(function () {
       setTime(getTimeLeft());
     }, 1000);
@@ -27,29 +33,15 @@ export default function CountdownTimer() {
     };
   }, []);
 
-  if (!time) return null;
-
-  const units = [
-    { label: "DAYS", value: time.days },
-    { label: "HRS", value: time.hours },
-    { label: "MIN", value: time.minutes },
-    { label: "SEC", value: time.seconds },
-  ];
-
   return (
-    <div className="flex gap-3 md:gap-5 font-mono">
-      {units.map(function (u) {
+    <div className="countdown" aria-label="Countdown to launch">
+      {UNITS.map(function (unit) {
         return (
-          <div
-            key={u.label}
-            className="flex flex-col items-center bg-[#171722] border border-white/10 rounded-lg px-4 py-3 md:px-6 md:py-4 min-w-[64px] md:min-w-[80px]"
-          >
-            <span className="text-2xl md:text-4xl font-semibold text-[#A78BFA] tabular-nums">
-              {String(u.value).padStart(2, "0")}
+          <div key={unit.key} className="countdown-unit">
+            <span className="countdown-value">
+              {time ? String(time[unit.key]).padStart(2, "0") : "--"}
             </span>
-            <span className="text-[10px] md:text-xs text-gray-500 tracking-widest mt-1">
-              {u.label}
-            </span>
+            <span className="countdown-label">{unit.label}</span>
           </div>
         );
       })}
