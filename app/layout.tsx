@@ -1,25 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-display",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-body",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
+  weight: ["400", "500"],
   variable: "--font-mono",
 });
 
-const title = "PlayThruu | Your games. Your story.";
+const title = "PlayThruu — your gaming diary";
 const description =
-  "A home for your gaming life. Log the journey, find your next obsession, and share the moments worth remembering.";
+  "Log, rate, and review the games you play. Follow friends and see what they're playing.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
@@ -28,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | PlayThruu",
   },
   description,
-  keywords: ["game tracker", "gaming backlog", "game log", "gaming journal", "PlayThruu"],
+  keywords: ["game diary", "gaming backlog", "game log", "game reviews", "PlayThruu"],
   openGraph: {
     title,
     description,
@@ -53,16 +51,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={
-          spaceGrotesk.variable +
-          " " +
-          inter.variable +
-          " " +
-          jetbrainsMono.variable +
-          " antialiased"
-        }
-      >
+      <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        {/* Switzer: the app's wordmark font (Fontshare, free for commercial
+            use) — matches the actual PlayThruu app, which uses it for the
+            same reason: closest open equivalent to Gilroy without buying a
+            licence. Only the wordmark references --font-brand. */}
+        <link href="https://api.fontshare.com/v2/css?f[]=switzer@800&display=swap" rel="stylesheet" />
+      </head>
+      <body className={plusJakartaSans.variable + " " + ibmPlexMono.variable + " antialiased"}>
         {children}
       </body>
     </html>
