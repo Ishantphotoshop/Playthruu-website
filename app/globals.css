@@ -500,10 +500,8 @@ h2 strong {
   padding: 0 28px 0 0;
 }
 .feature-item:not(.feature-item-first) {
-  padding-left: 28px;
-}
-.feature-item + .feature-item {
   border-left: 1px solid var(--line);
+  padding-left: 28px;
 }
 .feature-icon {
   align-items: center;
@@ -758,7 +756,7 @@ h2 strong {
     border-left: 0 !important;
     padding: 24px 0 !important;
   }
-  .feature-item:first-child {
+  .feature-grid > div:first-child > .feature-item {
     padding-top: 0 !important;
   }
   .waitlist-section {

@@ -123,7 +123,7 @@ export default async function Home() {
         <div className="feature-grid">
           {features.map(function (feature, i) {
             const [icon, title, body] = feature;
-            const edgeClass = i === 0 ? " feature-item-first" : "";
+            const edgeClass = i % 3 === 0 ? " feature-item-first" : "";
             return (
               <Reveal key={title} delay={i * 80}>
                 <article className={"feature-item" + edgeClass}>
