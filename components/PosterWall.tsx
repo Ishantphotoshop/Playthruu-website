@@ -42,6 +42,46 @@ const covers = [
     src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cocaa5.jpg",
     alt: "Grand Theft Auto VI",
   },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co5vmg.jpg",
+    alt: "The Legend of Zelda: Tears of the Kingdom",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co670h.jpg",
+    alt: "Baldur's Gate 3",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coaih8.jpg",
+    alt: "Cyberpunk 2077",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8fu7.jpg",
+    alt: "Minecraft",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1rs4.jpg",
+    alt: "Portal 2",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co6bo0.jpg",
+    alt: "Resident Evil 4",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobksf.jpg",
+    alt: "Death Stranding",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cob22v.jpg",
+    alt: "It Takes Two",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3wls.jpg",
+    alt: "Animal Crossing: New Horizons",
+  },
+  {
+    src: "https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3p5n.jpg",
+    alt: "Doom Eternal",
+  },
 ];
 
 export default function PosterWall() {
