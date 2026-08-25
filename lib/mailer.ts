@@ -15,7 +15,7 @@ export async function sendWaitlistConfirmation(toEmail: string) {
     from: '"PlayThruu" <hello@playthruu.com>',
     to: toEmail,
     subject: "You're on the list",
-    text: "You're on the PlayThruu waitlist. We'll email you the moment it's your turn — see you on the other side.",
-    html: `<p>You're on the PlayThruu waitlist.</p><p>We'll email you the moment it's your turn — see you on the other side.</p>`,
+    text: "You're on the PlayThruu waitlist. We'll email you the moment it's your turn — see you on the other side.\n\nThis is a one-time confirmation — you won't hear from us again until launch. Questions? Just reply to this email.",
+    html: `<p>You're on the PlayThruu waitlist.</p><p>We'll email you the moment it's your turn — see you on the other side.</p><p style="color:#8a9086;font-size:13px;">This is a one-time confirmation — you won't hear from us again until launch. Questions? Just reply to this email.</p>`,
   });
 }

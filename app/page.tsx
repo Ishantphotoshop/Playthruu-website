@@ -4,6 +4,7 @@ import Reveal from "@/components/Reveal";
 import BrandMark from "@/components/BrandMark";
 import PosterWall from "@/components/PosterWall";
 import EntryCardRotator from "@/components/EntryCardRotator";
+import MobileNav from "@/components/MobileNav";
 import { FeatureIcon } from "@/components/icons";
 import { supabase } from "@/lib/supabase";
 
@@ -57,6 +58,7 @@ export default async function Home() {
             Why PlayThruu
           </a>
         </div>
+        <MobileNav />
         <a href="#waitlist" className="button button-primary">
           Early access
         </a>
@@ -85,7 +87,7 @@ export default async function Home() {
             </a>
           </div>
           <p className="launch-note">
-            <span>12.09.26</span> Launching soon, starting with the people who
+            <span>Sept 12, 2026</span> Launching soon, starting with the people who
             care about their backlog.
           </p>
         </div>

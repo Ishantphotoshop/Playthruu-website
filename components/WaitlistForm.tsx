@@ -1,21 +1,46 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { joinWaitlist } from "@/app/actions";
+
+function detectSource(): string {
+  const params = new URLSearchParams(window.location.search);
+  const utmSource = params.get("utm_source") || params.get("ref");
+  if (utmSource) return utmSource;
+  if (document.referrer) {
+    try {
+      return new URL(document.referrer).hostname;
+    } catch {
+      // malformed referrer — fall through to "direct"
+    }
+  }
+  return "direct";
+}
 
 export default function WaitlistForm() {
   const [status, setStatus] = useState<
     "idle" | "submitting" | "done" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const mountedAt = useRef(0);
+
+  useEffect(function () {
+    mountedAt.current = Date.now();
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const email = new FormData(event.currentTarget).get("email");
+    const form = new FormData(event.currentTarget);
+    const email = form.get("email");
+    const honeypot = form.get("company");
     if (typeof email !== "string") return;
 
     setStatus("submitting");
-    const result = await joinWaitlist(email);
+    const result = await joinWaitlist(email, {
+      source: detectSource(),
+      honeypot: typeof honeypot === "string" ? honeypot : undefined,
+      elapsedMs: Date.now() - mountedAt.current,
+    });
 
     if (result.ok) {
       setStatus("done");
@@ -47,6 +72,14 @@ export default function WaitlistForm() {
           placeholder="your@email.com"
           aria-label="Email address"
           disabled={status === "submitting"}
+        />
+        <input
+          type="text"
+          name="company"
+          className="hp-field"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
         />
         <button
           type="submit"

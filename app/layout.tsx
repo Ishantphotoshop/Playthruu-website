@@ -35,6 +35,9 @@ export const metadata: Metadata = {
     "game reviews",
     "PlayThruu",
   ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title,
     description,
@@ -50,6 +53,14 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#0a0b0f",
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "PlayThruu",
+  url: "https://playthruu.com",
+  description,
 };
 
 export default function RootLayout({
@@ -69,12 +80,19 @@ export default function RootLayout({
           href="https://api.fontshare.com/v2/css?f[]=switzer@800&display=swap"
           rel="stylesheet"
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body
         className={
           plusJakartaSans.variable + " " + ibmPlexMono.variable + " antialiased"
         }
       >
+        <a href="#top" className="skip-link">
+          Skip to content
+        </a>
         {children}
       </body>
     </html>

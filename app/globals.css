@@ -61,6 +61,22 @@ input {
   outline: 2px solid var(--acid);
   outline-offset: 2px;
 }
+.skip-link {
+  background: var(--acid);
+  border-radius: var(--radius-s);
+  color: var(--void);
+  font-size: 13px;
+  font-weight: 700;
+  left: 16px;
+  padding: 10px 16px;
+  position: absolute;
+  top: -60px;
+  transition: top 0.2s var(--ease);
+  z-index: 100;
+}
+.skip-link:focus {
+  top: 16px;
+}
 
 /* ---- shell ---- */
 .site-nav {
@@ -70,6 +86,57 @@ input {
   margin: 0 auto;
   max-width: 1240px;
   padding: 25px 32px;
+  position: relative;
+}
+.mobile-nav-toggle {
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+.mobile-nav-toggle-bar {
+  background: var(--ink);
+  border-radius: 2px;
+  height: 2px;
+  transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+  width: 20px;
+}
+.mobile-nav-toggle-bar.is-open-top {
+  transform: translateY(3.5px) rotate(45deg);
+}
+.mobile-nav-toggle-bar.is-open-bottom {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+.mobile-nav-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  flex-direction: column;
+  left: 20px;
+  padding: 8px;
+  position: absolute;
+  right: 20px;
+  top: calc(100% - 4px);
+  z-index: 50;
+}
+.mobile-nav-link {
+  border-radius: var(--radius-s);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 12px 14px;
+}
+.mobile-nav-link:hover,
+.mobile-nav-link:focus-visible {
+  background: var(--acid-dim);
 }
 .brand {
   align-items: center;
@@ -561,6 +628,11 @@ h2 strong {
   display: flex;
   gap: 10px;
 }
+.hp-field {
+  left: -9999px;
+  position: absolute;
+  top: -9999px;
+}
 .waitlist-form input {
   background: var(--void);
   border: 1px solid var(--line);
@@ -613,6 +685,33 @@ h2 strong {
 }
 .form-success strong {
   color: var(--acid);
+}
+
+.not-found {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px;
+  text-align: center;
+}
+.not-found .brand-mark {
+  height: 40px;
+  margin-bottom: 8px;
+  width: 40px;
+}
+.not-found h1 {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.not-found p {
+  color: var(--dim);
+  margin-bottom: 8px;
 }
 
 .site-footer {
