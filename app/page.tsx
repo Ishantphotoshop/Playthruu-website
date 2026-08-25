@@ -1,3 +1,4 @@
+import Link from "next/link";
 import CountdownTimer from "@/components/CountdownTimer";
 import WaitlistForm from "@/components/WaitlistForm";
 import Reveal from "@/components/Reveal";
@@ -183,6 +184,11 @@ export default async function Home() {
           <a href="https://www.igdb.com" target="_blank" rel="noreferrer">
             IGDB
           </a>
+        </span>
+        <span>
+          <Link href="/privacy">Privacy</Link>
+          {" · "}
+          <Link href="/terms">Terms</Link>
         </span>
         <span>© 2026</span>
       </footer>
