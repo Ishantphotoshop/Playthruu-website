@@ -168,6 +168,15 @@ export default async function Home() {
           <BrandMark className="brand-mark" />
           <span className="brand-word">PlayThruu</span>
         </span>
+        <span>
+          <a
+            href="https://www.instagram.com/playthruu"
+            target="_blank"
+            rel="noreferrer"
+          >
+            @playthruu on Instagram
+          </a>
+        </span>
         <span>Made for the long haul.</span>
         <span>
           Game data &amp; covers via{" "}
