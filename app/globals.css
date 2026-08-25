@@ -484,7 +484,7 @@ h2 strong {
   z-index: 1;
 }
 .poster-wall-track {
-  animation: marquee 92s linear infinite;
+  animation: marquee 184s linear infinite;
   display: flex;
   gap: 14px;
   width: max-content;
