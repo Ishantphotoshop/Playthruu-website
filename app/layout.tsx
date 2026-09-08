@@ -1,16 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const fraunces = Fraunces({
   subsets: ["latin"],
   style: ["normal", "italic"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
+  variable: "--font-display",
+});
+
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-body",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
+const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-mono",
@@ -56,7 +62,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#14100b",
 };
 
 const jsonLd = {
@@ -75,15 +81,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://api.fontshare.com" />
-        {/* Switzer: the app's wordmark font (Fontshare, free for commercial
-            use) — matches the actual PlayThruu app, which uses it for the
-            same reason: closest open equivalent to Gilroy without buying a
-            licence. Only the wordmark references --font-brand. */}
-        <link
-          href="https://api.fontshare.com/v2/css?f[]=switzer@800&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -91,7 +88,12 @@ export default function RootLayout({
       </head>
       <body
         className={
-          plusJakartaSans.variable + " " + ibmPlexMono.variable + " antialiased"
+          fraunces.variable +
+          " " +
+          plexSans.variable +
+          " " +
+          plexMono.variable +
+          " antialiased"
         }
       >
         <a href="#top" className="skip-link">

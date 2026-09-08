@@ -270,7 +270,6 @@ export default function EntryCardRotator() {
 
   return (
     <div className="hero-art" aria-label="A preview of a PlayThruu diary entry">
-      <div className="orbit" />
       <div className="entry-card" key={index}>
         <div className="entry-card__head">
           <span>Diary Entry</span>
