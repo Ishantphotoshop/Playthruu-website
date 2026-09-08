@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --void: #0a0b0f;
-  --panel: #14161d;
-  --ink: #f1f0e9;
-  --dim: #8a9086;
-  --line: rgba(241, 240, 233, 0.12);
+  /* Matches the app's own re-themed palette (app.playthruu.com) exactly —
+     the site is a companion surface to the real product, not a separate
+     visual identity: same black → brown → cream ramp, same lime accent. */
+  --void: #000000;
+  --panel: #1f160d;
+  --ink: #dfd8c4;
+  --dim: #a9987b;
+  --line: rgba(223, 216, 196, 0.08);
   --acid: #d9ff3f;
-  --acid-dim: rgba(217, 255, 63, 0.14);
-  --violet: #a78bfa;
-  --star-fill: #c6c42e;
+  --acid-dim: rgba(217, 255, 63, 0.15);
+  --gold: #ffc247;
+  --star-fill: #c9c92c;
 
   --font-display: var(--font-body);
   --font-brand: "Switzer", system-ui, sans-serif;
@@ -23,7 +26,7 @@
   --shadow-float: 0 10px 40px rgba(0, 0, 0, 0.46);
   --shadow-accent: 0 6px 26px rgba(217, 255, 63, 0.24);
   --glow-focus:
-    0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 26px rgba(217, 255, 63, 0.4);
+    0 0 0 2px rgba(223, 216, 196, 0.85), 0 0 26px rgba(217, 255, 63, 0.4);
   --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -41,7 +44,7 @@ html {
 }
 body {
   background:
-    radial-gradient(120% 70% at 50% 0%, #1a1d12 0%, transparent 62%),
+    radial-gradient(120% 70% at 50% 0%, var(--panel) 0%, transparent 62%),
     var(--void);
   background-attachment: fixed;
   color: var(--ink);
@@ -270,7 +273,7 @@ h2 strong {
     90deg,
     var(--ink) 0%,
     var(--ink) 25%,
-    var(--violet) 100%
+    var(--gold) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -470,7 +473,7 @@ h2 strong {
   transform: rotate(-3deg);
 }
 .note-two strong {
-  color: var(--violet);
+  color: var(--gold);
 }
 
 /* ---- poster wall (real cover art marquee) ---- */

@@ -14,8 +14,8 @@ export default async function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#0a0b0f",
-          backgroundImage: "radial-gradient(120% 70% at 50% 0%, #1a1d12 0%, transparent 62%)",
+          background: "#000000",
+          backgroundImage: "radial-gradient(120% 70% at 50% 0%, #1f160d 0%, transparent 62%)",
           padding: "72px",
         }}
       >
@@ -26,21 +26,21 @@ export default async function Image() {
               d="M 113.4045,52 A 54,54 0 1,0 113.4045,68 L 64,68 A 8,8 0 0,1 64,52 Z"
             />
           </svg>
-          <div style={{ display: "flex", fontSize: 24, fontWeight: 800, letterSpacing: "-0.01em", color: "#f1f0e9" }}>
+          <div style={{ display: "flex", fontSize: 24, fontWeight: 800, letterSpacing: "-0.01em", color: "#dfd8c4" }}>
             PlayThruu
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontSize: 96, fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.05, color: "#f1f0e9" }}>
+          <div style={{ display: "flex", fontSize: 96, fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.05, color: "#dfd8c4" }}>
             Log it. Rate it.
           </div>
-          <div style={{ display: "flex", fontSize: 96, fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.05, color: "#a78bfa" }}>
+          <div style={{ display: "flex", fontSize: 96, fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.05, color: "#ffc247" }}>
             Never forget it.
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ width: 8, height: 8, borderRadius: 99, background: "#d9ff3f" }} />
-          <div style={{ display: "flex", fontSize: 20, color: "#8a9086", letterSpacing: "0.02em" }}>
+          <div style={{ display: "flex", fontSize: 20, color: "#a9987b", letterSpacing: "0.02em" }}>
             The diary for everything you play — launching soon
           </div>
         </div>
