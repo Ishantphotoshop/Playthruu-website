@@ -4,7 +4,7 @@ import WaitlistForm from "@/components/WaitlistForm";
 import Reveal from "@/components/Reveal";
 import BrandMark from "@/components/BrandMark";
 import PosterWall from "@/components/PosterWall";
-import EntryCardRotator from "@/components/EntryCardRotator";
+import ReviewGallery from "@/components/ReviewGallery";
 import MobileNav from "@/components/MobileNav";
 import { FeatureIcon } from "@/components/icons";
 import { supabase } from "@/lib/supabase";
@@ -92,7 +92,7 @@ export default async function Home() {
             care about their backlog.
           </p>
         </div>
-        <EntryCardRotator />
+        <ReviewGallery />
       </section>
 
       <PosterWall />
