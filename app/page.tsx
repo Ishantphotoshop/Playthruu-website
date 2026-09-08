@@ -98,12 +98,11 @@ export default async function Home() {
       <PosterWall />
 
       <section id="inside" className="section-wrap intro-section">
-        <div className="section-kicker">The idea</div>
         <Reveal className="intro-grid">
           <h2>
             A better place
             <br />
-            for your <strong>backlog.</strong>
+            for your backlog.
           </h2>
           <p>
             Games are more than a pile of titles you own. They&rsquo;re
@@ -116,11 +115,10 @@ export default async function Home() {
 
       <section id="why" className="section-wrap feature-section">
         <Reveal className="section-heading">
-          <div className="section-kicker">Built for the journey</div>
           <h2>
             Everything a diary
             <br />
-            should <strong>do.</strong>
+            should do.
           </h2>
         </Reveal>
         <div className="feature-list">
@@ -148,11 +146,10 @@ export default async function Home() {
 
       <section id="waitlist" className="waitlist-section section-wrap">
         <Reveal>
-          <div className="section-kicker">First in line</div>
           <h2>
             Make your
             <br />
-            <strong>next move.</strong>
+            next move.
           </h2>
           <p>Be there when your gaming life gets a proper home.</p>
         </Reveal>
