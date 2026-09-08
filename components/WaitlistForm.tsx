@@ -52,7 +52,7 @@ export default function WaitlistForm() {
 
   if (status === "done") {
     return (
-      <p className="form-success">
+      <p className="form-success" role="status" aria-live="polite">
         You&rsquo;re on the list. <strong>See you on the other side.</strong>
       </p>
     );
@@ -71,6 +71,8 @@ export default function WaitlistForm() {
           required
           placeholder="your@email.com"
           aria-label="Email address"
+          aria-describedby={status === "error" ? "waitlist-error" : undefined}
+          aria-invalid={status === "error" || undefined}
           disabled={status === "submitting"}
         />
         <input
@@ -90,7 +92,7 @@ export default function WaitlistForm() {
         </button>
       </div>
       {status === "error" && (
-        <p className="form-error">
+        <p id="waitlist-error" className="form-error" role="alert">
           {errorMessage || "Something went wrong — try again."}
         </p>
       )}
