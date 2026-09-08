@@ -123,18 +123,22 @@ export default async function Home() {
             should <strong>do.</strong>
           </h2>
         </Reveal>
-        <div className="feature-grid">
+        <div className="feature-list">
           {features.map(function (feature, i) {
             const [icon, title, body] = feature;
-            const edgeClass = i % 3 === 0 ? " feature-item-first" : "";
             return (
-              <Reveal key={title} delay={i * 80}>
-                <article className={"feature-item" + edgeClass}>
+              <Reveal key={title} delay={i * 70}>
+                <article className="feature-row">
+                  <span className="feature-index">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <div className="feature-icon">
                     <FeatureIcon name={icon} />
                   </div>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
+                  <div className="feature-copy">
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                  </div>
                 </article>
               </Reveal>
             );

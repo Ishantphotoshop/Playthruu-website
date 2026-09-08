@@ -559,19 +559,36 @@ h2 strong {
   justify-content: space-between;
 }
 
-.feature-grid {
-  column-gap: 1px;
+/* A stacked ledger, not a card grid — each row reads like a line in the
+   diary itself (rule above/below, a running index), rather than the
+   generic icon-in-a-box grid this used to be. The index numbers are
+   real information here, not decoration: they're the actual order the
+   product asks you to move through (log, then rate, then review...). */
+.feature-list {
+  border-top: 1px solid var(--line);
+  margin-top: 60px;
+}
+.feature-row {
+  align-items: start;
+  border-bottom: 1px solid var(--line);
+  column-gap: 24px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 70px;
-  row-gap: 56px;
+  grid-template-areas: "index icon copy";
+  grid-template-columns: 34px 48px 1fr;
+  padding: 26px 0;
+  transition: background 0.2s ease;
 }
-.feature-item {
-  padding: 0 28px 0 0;
+.feature-row:hover {
+  background: rgba(255, 255, 255, 0.025);
 }
-.feature-item:not(.feature-item-first) {
-  border-left: 1px solid var(--line);
-  padding-left: 28px;
+.feature-index {
+  color: var(--acid);
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  font-weight: 600;
+  grid-area: index;
+  letter-spacing: 0.04em;
+  padding-top: 12px;
 }
 .feature-icon {
   align-items: center;
@@ -580,25 +597,29 @@ h2 strong {
   box-shadow: 0 0 0 1px rgba(217, 255, 63, 0.25);
   color: var(--acid);
   display: flex;
-  height: 52px;
+  grid-area: icon;
+  height: 48px;
   justify-content: center;
-  width: 52px;
+  width: 48px;
 }
 .feature-icon svg {
-  height: 24px;
-  width: 24px;
+  height: 22px;
+  width: 22px;
 }
-.feature-item h3 {
-  font-size: 21px;
+.feature-copy {
+  grid-area: copy;
+}
+.feature-copy h3 {
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.015em;
-  margin: 20px 0 10px;
+  margin: 0 0 8px;
 }
-.feature-item p {
+.feature-copy p {
   color: var(--dim);
   font-size: 14.5px;
   line-height: 1.55;
-  max-width: 280px;
+  max-width: 480px;
 }
 
 /* ---- waitlist ---- */
@@ -906,17 +927,28 @@ h2 strong {
   .section-heading {
     display: block;
   }
-  .feature-grid {
-    display: block;
-    margin-top: 48px;
+  .feature-list {
+    margin-top: 40px;
   }
-  .feature-item {
-    border-bottom: 1px solid var(--line);
-    border-left: 0 !important;
-    padding: 24px 0 !important;
+  .feature-row {
+    column-gap: 14px;
+    grid-template-columns: 24px 40px 1fr;
+    padding: 20px 0;
   }
-  .feature-grid > div:first-child > .feature-item {
-    padding-top: 0 !important;
+  .feature-index {
+    font-size: 12px;
+    padding-top: 10px;
+  }
+  .feature-icon {
+    height: 40px;
+    width: 40px;
+  }
+  .feature-icon svg {
+    height: 19px;
+    width: 19px;
+  }
+  .feature-copy h3 {
+    font-size: 18px;
   }
   .waitlist-section {
     margin-bottom: 30px;

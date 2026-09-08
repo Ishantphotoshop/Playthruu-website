@@ -25,11 +25,39 @@ export default function CountdownTimer() {
   const [time, setTime] = useState<ReturnType<typeof getTimeLeft> | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(function () {
-      setTime(getTimeLeft());
-    }, 1000);
-    return function () {
+    setTime(getTimeLeft());
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    // A once-a-minute correction is enough to stay accurate without a
+    // visibly ticking number for anyone who's asked for less motion.
+    const tickMs = reduceMotion ? 60000 : 1000;
+
+    let interval: ReturnType<typeof setInterval> | null = null;
+    function start() {
+      if (interval) return;
+      interval = setInterval(function () {
+        setTime(getTimeLeft());
+      }, tickMs);
+    }
+    function stop() {
+      if (!interval) return;
       clearInterval(interval);
+      interval = null;
+    }
+    function handleVisibility() {
+      if (document.hidden) stop();
+      else {
+        setTime(getTimeLeft());
+        start();
+      }
+    }
+
+    start();
+    document.addEventListener("visibilitychange", handleVisibility);
+    return function () {
+      stop();
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 
