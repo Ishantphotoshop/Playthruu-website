@@ -23,7 +23,7 @@ export default async function Image() {
           <svg width="34" height="34" viewBox="0 0 120 120">
             <path
               fill="#F2F5FA"
-              d="M 113.4045,52 A 54,54 0 1,0 113.4045,68 L 64,68 A 8,8 0 0,1 64,52 Z"
+              d="M 110,52.5 L 60,52.5 A 7.5,7.5 0 0,0 60,67.5 L 110,67.5 A 2.9272,2.9272 0 0,1 112.8625,71.0248 A 54,54 0 1,1 112.8625,48.9752 A 2.9272,2.9272 0 0,1 110,52.5 Z"
             />
           </svg>
           <div style={{ display: "flex", fontSize: 24, fontWeight: 800, letterSpacing: "-0.01em", color: "#dfd8c4" }}>
