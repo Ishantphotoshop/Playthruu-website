@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createServiceClient } from "@/lib/supabase-server";
-import { findGameArt } from "@/lib/news-images";
+import { findStoryImage } from "@/lib/news-images";
 import {
   EDITABLE_FIELDS,
   autoPublishBlockers,
@@ -137,9 +137,9 @@ export async function createFromBrain(input: Record<string, unknown>) {
       });
   }
 
-  // No image supplied: use the game's IGDB art (the PlayThruu card is the
-  // fallback when there's no exact match).
-  if (!a.image_url) Object.assign(a, await findGameArt(a.game));
+  // No image supplied: the game's IGDB art, else the official source's
+  // own image; the PlayThruu card is the last resort.
+  if (!a.image_url) Object.assign(a, await findStoryImage(a));
 
   const blockers = autoPublishBlockers(a);
   const publish = blockers.length === 0;
@@ -234,7 +234,7 @@ export async function updateFromBrain(slug: string, input: Record<string, unknow
     next.body = [update, ...next.body];
   }
 
-  if (!next.image_url) Object.assign(next, await findGameArt(next.game));
+  if (!next.image_url) Object.assign(next, await findStoryImage(next));
 
   const errors = validateArticle(next);
   if (errors.length) return json(422, { error: "validation failed", errors });

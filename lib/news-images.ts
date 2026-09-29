@@ -13,9 +13,24 @@ type IgdbGame = {
   name: string;
   first_release_date?: number;
   total_rating_count?: number;
-  artworks?: { image_id: string }[];
-  screenshots?: { image_id: string }[];
+  artworks?: Art[];
+  screenshots?: Art[];
 };
+type Art = { image_id: string; width?: number; height?: number; artwork_type?: number };
+
+// IGDB artwork_type ids, best first: key art without logo, key art with
+// logo, generic artwork, concept art. Logos, icons, covers and
+// infographics are never used — they look broken as a landscape thumbnail.
+const ART_PREFERENCE = [2, 3, 1, 4];
+const landscape = (a: Art) => !a.width || !a.height || (a.width / a.height >= 1.25 && a.width >= 800);
+
+function pickArt(g: IgdbGame): Art | undefined {
+  for (const type of ART_PREFERENCE) {
+    const hit = g.artworks?.find((a) => a.artwork_type === type && landscape(a));
+    if (hit) return hit;
+  }
+  return g.screenshots?.[0];
+}
 
 const norm = (s: string) =>
   s
@@ -42,7 +57,7 @@ export async function findGameArt(game: string | null | undefined) {
       body: JSON.stringify({
         endpoint: "games",
         query:
-          'search "' + title.replace(/"/g, "") + '"; fields name,first_release_date,total_rating_count,artworks.image_id,screenshots.image_id; limit 25;',
+          'search "' + title.replace(/"/g, "") + '"; fields name,first_release_date,total_rating_count,artworks.image_id,artworks.width,artworks.height,artworks.artwork_type,screenshots.image_id; limit 25;',
       }),
       signal: AbortSignal.timeout(8000),
     });
@@ -61,14 +76,51 @@ export async function findGameArt(game: string | null | undefined) {
     // "Castlevania"): only trust the top one if it's clearly the famous one.
     if (runnerUp && (match.total_rating_count ?? 0) < 3 * Math.max(runnerUp.total_rating_count ?? 0, 1)) return null;
     // Never fall through to another game's art if the right one has none.
-    if (!match.artworks?.length && !match.screenshots?.length) return null;
+    const art = pickArt(match);
+    if (!art) return null;
 
-    const imageId = (match.artworks?.[0] ?? match.screenshots?.[0])!.image_id;
     return {
-      image_url: IMG + imageId + ".jpg",
+      image_url: IMG + art.image_id + ".jpg",
       image_credit: match.name + " — game art via IGDB",
     };
   } catch {
     return null;
   }
+}
+
+// Stories that aren't about one game (platform features, industry news):
+// the official source's own header image — the og:image the publisher put
+// on its newsroom post for exactly this kind of sharing. Only tier-1
+// (official) sources are ever used, never a news outlet's photo.
+export async function findOfficialImage(sources: { name: string; url?: string; tier: number }[]) {
+  for (const s of sources) {
+    if (s.tier !== 1 || !s.url) continue;
+    try {
+      const res = await fetch(s.url, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; PlayThruuNewsBot/1.0; +https://playthruu.com/news)" },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) continue;
+      const html = (await res.text()).slice(0, 200_000);
+      const meta =
+        html.match(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i) ??
+        html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)["']/i);
+      if (!meta) continue;
+      const url = new URL(meta[1].replace(/&amp;/g, "&"), s.url);
+      if (url.protocol !== "https:") continue;
+      return { image_url: url.toString(), image_credit: "Image: " + s.name.replace(/\s*\(via [^)]*\)\s*$/, "").split(/ — |: /)[0] };
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
+
+// What a story shows: its game's IGDB art, else the official source's
+// image, else nothing (the site/app then draw the PlayThruu card).
+export async function findStoryImage(a: {
+  game?: string | null;
+  sources: { name: string; url?: string; tier: number }[];
+}) {
+  return (await findGameArt(a.game)) ?? (await findOfficialImage(a.sources));
 }
