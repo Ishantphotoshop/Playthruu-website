@@ -2,6 +2,7 @@
 // CLI the News Brain uses to talk to the site's /api/news/brain endpoints.
 //
 //   node scripts/news-brain.mjs list                  # index of all articles (dedup check)
+//   node scripts/news-brain.mjs leads [hours]         # recent outlet headlines to investigate (default 12h)
 //   node scripts/news-brain.mjs get <slug>            # one article, full
 //   node scripts/news-brain.mjs create <file.json>    # new story
 //   node scripts/news-brain.mjs update <slug> <file.json>
@@ -19,11 +20,12 @@ if (!token) {
 }
 
 const [cmd, a, b] = process.argv.slice(2);
-const url = base + "/api/news/brain/articles" + (a && cmd !== "create" ? "/" + encodeURIComponent(a) : "");
+const url = base + "/api/news/brain/articles" + (a && !["create", "leads"].includes(cmd) ? "/" + encodeURIComponent(a) : "");
 const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 
 const requests = {
   list: () => ["GET", base + "/api/news/brain/articles"],
+  leads: () => ["GET", base + "/api/news/brain/leads?hours=" + (Number(a) || 12)],
   get: () => ["GET", url],
   create: () => ["POST", base + "/api/news/brain/articles", readJson(a)],
   update: () => ["PATCH", url, readJson(b)],
@@ -31,7 +33,7 @@ const requests = {
 };
 
 if (!requests[cmd]) {
-  console.error("usage: list | get <slug> | create <file> | update <slug> <file> | checked <slug>");
+  console.error("usage: list | leads [hours] | get <slug> | create <file> | update <slug> <file> | checked <slug>");
   process.exit(2);
 }
 

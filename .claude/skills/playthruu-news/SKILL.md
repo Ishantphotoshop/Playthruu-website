@@ -20,6 +20,7 @@ defaults to https://playthruu.com):
 | Command | Does |
 |---|---|
 | `list` | Index of every article (incl. review queue and rejected) — your duplicate check |
+| `leads [hours]` | Recent headlines from IGN, GameSpot, Eurogamer, PC Gamer and Kotaku (default last 12h) — your primary lead list |
 | `get <slug>` | Full article |
 | `create <file.json>` | New story |
 | `update <slug> <file.json>` | Change an existing story |
@@ -45,7 +46,20 @@ The **server** enforces the rules, so read its responses:
 1. **Load state:** `list`. Note `needs_update: true` (admin asked you to
    revisit) and `flagged_incorrect: true` (admin says it's wrong — find out
    what, fix it via `update`, explain in `editor_notes`).
-2. **Discover.** Search the web for gaming developments since the last run
+2. **Work the lead list first.** Run `leads 12` (or more hours if the
+   newest article is older). PlayThruu's app no longer links out to these
+   outlets — its News tab shows only PlayThruu's own articles — so every
+   lead a player would care about should become a PlayThruu story if it can
+   be verified. For each lead: dedupe (same event across outlets is ONE
+   story; same event as an existing article is an `update`), then find the
+   official source and write your own article, crediting the outlet in
+   `first_reported_by` and the sources list (tier 2). **A lead is a tip, not
+   a source text:** never copy or paraphrase its headline or blurb, and
+   read the actual official post and at least one outlet's full piece
+   before writing. If there is no official source but the outlet is
+   reputable, write it as `reported` — it goes to the review queue. Skip
+   only reviews/opinion/guides/deals roundups/listicles and trivia.
+   Then **discover** anything the feeds missed: search the web for gaming developments since the last run
    (look at the newest `updated_at`). Categories: announcements, releases,
    release-date changes, delays, trailers, gameplay reveals, DLC/expansions,
    updates/patches, review roundups, sales milestones, studio news/closures,
@@ -103,9 +117,11 @@ A run that searches twice and gives up is a failed run. Every run must:
 - **Prefer queuing to skipping** for anything meaningful but uncertain: the
   review queue exists so an admin can decide. Skip only what's genuinely
   minor, stale, or already covered.
-- **Aim for coverage, not volume:** most runs should produce 0–4 stories.
-  Zero is fine when the day is genuinely quiet — but only after the full
-  search above.
+- **Aim for coverage:** the News tab in the app now depends entirely on
+  you, so a normal run covers every newsworthy lead — typically 3–8
+  stories. Hard cap: 10 creates per run (quality over volume; the rest
+  wait for the next run). Zero is fine only when the leads and the full
+  search above genuinely turned up nothing.
 - **Revisit** each published story updated in the last 14 days with at
   least one targeted search, then `update` or `checked` it.
 
