@@ -155,6 +155,13 @@ an outlet, say so: `"Konami announcement (via Inven Global)"`.
 
 ## Quality check before every write
 
+**Fact-check pass first.** Re-read every factual sentence of your draft
+against the source text itself, not your notes. Don't add words the source
+doesn't support. For example, a source saying studios "returned to
+management" means their own management (independence), not "returned to
+Xbox management". Where the source is ambiguous, keep its wording or leave
+the detail out.
+
 Independently synthesized, not copied? Confirmed vs reported vs rumour vs
 leak clear? Original reporting credited, no implied exclusivity? Reliable
 sources? Accurate headline? Genuinely useful to a gamer? Stands alone? If
