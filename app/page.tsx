@@ -58,6 +58,9 @@ export default async function Home() {
           <a href="#why" className="nav-link">
             Why PlayThruu
           </a>
+          <Link href="/news" className="nav-link">
+            News
+          </Link>
         </div>
         <MobileNav />
         <a href="#waitlist" className="button button-primary">
@@ -187,6 +190,8 @@ export default async function Home() {
           </a>
         </span>
         <span>
+          <Link href="/news">News</Link>
+          {" · "}
           <Link href="/privacy">Privacy</Link>
           {" · "}
           <Link href="/terms">Terms</Link>

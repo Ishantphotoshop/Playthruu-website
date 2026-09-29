@@ -5,6 +5,7 @@ import { useState } from "react";
 const links = [
   { href: "#inside", label: "How it works" },
   { href: "#why", label: "Why PlayThruu" },
+  { href: "/news", label: "News" },
 ];
 
 export default function MobileNav() {
