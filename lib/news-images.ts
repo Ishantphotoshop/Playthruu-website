@@ -88,39 +88,81 @@ export async function findGameArt(game: string | null | undefined) {
   }
 }
 
-// Stories that aren't about one game (platform features, industry news):
-// the official source's own header image — the og:image the publisher put
-// on its newsroom post for exactly this kind of sharing. Only tier-1
-// (official) sources are ever used, never a news outlet's photo.
+// Publications whose photos PlayThruu must never reuse. An official page
+// (publisher, platform holder, developer, league) is fine; a news
+// outlet's article image is not, whatever the Brain claims.
+const NEWS_OUTLETS = [
+  "ign.com", "gamespot.com", "eurogamer.net", "pcgamer.com", "kotaku.com",
+  "videogameschronicle.com", "gematsu.com", "polygon.com", "theverge.com",
+  "gamesindustry.biz", "nintendolife.com", "gameinformer.com", "pushsquare.com",
+  "purexbox.com", "dexerto.com", "gamerant.com", "thegamer.com", "vice.com",
+  "windowscentral.com", "destructoid.com", "rockpapershotgun.com", "vgc.com",
+  "insider-gaming.com", "gamesradar.com", "techradar.com", "screenrant.com",
+  "cbr.com", "forbes.com", "bloomberg.com", "reuters.com", "inven.co.kr",
+  "invenglobal.com", "4gamer.net", "famitsu.com", "siliconera.com",
+];
+export function isNewsOutlet(url: string) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    return NEWS_OUTLETS.some((d) => host === d || host.endsWith("." + d));
+  } catch {
+    return true;
+  }
+}
+
+// The og:image / twitter:image an official page publishes for sharing.
+async function pageImage(pageUrl: string) {
+  if (isNewsOutlet(pageUrl)) return null;
+  try {
+    const res = await fetch(pageUrl, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; PlayThruuNewsBot/1.0; +https://playthruu.com/news)" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return null;
+    const html = (await res.text()).slice(0, 300_000);
+    const meta =
+      html.match(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)(?::secure_url|:src)?["'][^>]+content=["']([^"']+)["']/i) ??
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)(?::src)?["']/i);
+    if (!meta) return null;
+    const url = new URL(meta[1].replace(/&amp;/g, "&"), pageUrl);
+    return url.protocol === "https:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+// Stories that aren't about one game (platform features, hardware,
+// industry news): the header image of their official (tier-1) source.
 export async function findOfficialImage(sources: { name: string; url?: string; tier: number }[]) {
   for (const s of sources) {
     if (s.tier !== 1 || !s.url) continue;
-    try {
-      const res = await fetch(s.url, {
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; PlayThruuNewsBot/1.0; +https://playthruu.com/news)" },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!res.ok) continue;
-      const html = (await res.text()).slice(0, 200_000);
-      const meta =
-        html.match(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i) ??
-        html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)["']/i);
-      if (!meta) continue;
-      const url = new URL(meta[1].replace(/&amp;/g, "&"), s.url);
-      if (url.protocol !== "https:") continue;
-      return { image_url: url.toString(), image_credit: "Image: " + s.name.replace(/\s*\(via [^)]*\)\s*$/, "").split(/ — |: /)[0] };
-    } catch {
-      continue;
+    const image = await pageImage(s.url);
+    if (image) {
+      return { image_url: image, image_credit: "Image: " + s.name.replace(/\s*\(via [^)]*\)\s*$/, "").split(/ — |: /)[0] };
     }
   }
   return null;
 }
 
-// What a story shows: its game's IGDB art, else the official source's
-// image, else nothing (the site/app then draw the PlayThruu card).
-export async function findStoryImage(a: {
-  game?: string | null;
-  sources: { name: string; url?: string; tier: number }[];
-}) {
-  return (await findGameArt(a.game)) ?? (await findOfficialImage(a.sources));
+// What a story shows, in order: its game's IGDB art; the image on its
+// official source; the image of an official page the Brain names for the
+// subject (image_source_url — e.g. playstation.com's PS5 Pro page for a
+// hardware story). A thumbnail is required, so null here means the
+// story is rejected until one of those is supplied.
+export async function findStoryImage(
+  a: { game?: string | null; sources: { name: string; url?: string; tier: number }[] },
+  imageSourceUrl?: unknown,
+) {
+  const fromGame = await findGameArt(a.game);
+  if (fromGame) return fromGame;
+  const fromSource = await findOfficialImage(a.sources);
+  if (fromSource) return fromSource;
+  if (typeof imageSourceUrl === "string" && /^https:\/\//.test(imageSourceUrl)) {
+    const image = await pageImage(imageSourceUrl);
+    if (image) return { image_url: image, image_credit: "Image: " + new URL(imageSourceUrl).hostname.replace(/^www\./, "") };
+  }
+  return null;
 }
+
+export const THUMBNAIL_REQUIRED =
+  "thumbnail required: no image could be found. Set `game` to the exact official title (add \"(YEAR)\" if titles clash), or pass `image_source_url` = an official page for the subject (publisher/platform/developer/league site, never a news outlet) that has a share image — e.g. https://www.playstation.com/en-us/ps5/ps5-pro/ for a PS5 Pro story.";

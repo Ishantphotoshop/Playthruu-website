@@ -178,15 +178,23 @@ an outlet, say so: `"Konami announcement (via Inven Global)"`.
   rumour was confirmed (a queued rumour that becomes confirmed + High +
   tier-1 auto-publishes), and new sources via `add_sources` (appends; never
   drops history). Don't change the slug.
-- **Images:** always set `game` to the game's **exact official title**
-  (e.g. "Marvel's Wolverine", "Grand Theft Auto VI") — the server then
-  attaches that game's official art from IGDB automatically. If several
-  games share the title (originals, remakes, reboots), add the release
-  year: `"Castlevania (1986)"`, `"Resident Evil 4 (2023)"`. Leave
-  `image_url` null unless you have an official press-kit asset from the
-  publisher/platform (with `image_credit`). Never use images from news
-  sites. Stories without a single game (industry, hardware) get the
-  PlayThruu card automatically.
+- **Images — every story MUST have a thumbnail** (the server rejects a
+  story with `422 thumbnail required` otherwise). The server finds it for
+  you, in this order:
+  1. `game` set to the game's **exact official title** → its official key
+     art from IGDB. If several games share the title (originals, remakes,
+     reboots), add the release year: `"Castlevania (1986)"`.
+  2. Otherwise the share image of the story's **tier-1 source** page
+     (e.g. the Xbox Wire / PlayStation Blog post).
+  3. Otherwise pass `"image_source_url"`: an **official page for the
+     subject** that has a share image — the hardware's product page for a
+     hardware story (`https://www.playstation.com/en-us/ps5/ps5-pro/`),
+     the company's own site for a corporate story (`https://www.sony.net/`),
+     the league/event's official site, the game's official website.
+  Never a news outlet's page or photo (the server blocks those). You may
+  still set `image_url` directly to an official press-kit asset, with
+  `image_credit`. If you get `422 thumbnail required`, add
+  `image_source_url` and resend — don't drop the story.
 
 ## Quality check before every write
 

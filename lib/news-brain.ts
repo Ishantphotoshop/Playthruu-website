@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createServiceClient } from "@/lib/supabase-server";
-import { findStoryImage } from "@/lib/news-images";
+import { THUMBNAIL_REQUIRED, findStoryImage, isNewsOutlet } from "@/lib/news-images";
 import {
   EDITABLE_FIELDS,
   autoPublishBlockers,
@@ -137,9 +137,12 @@ export async function createFromBrain(input: Record<string, unknown>) {
       });
   }
 
-  // No image supplied: the game's IGDB art, else the official source's
-  // own image; the PlayThruu card is the last resort.
-  if (!a.image_url) Object.assign(a, await findStoryImage(a));
+  // Every story needs a thumbnail: a supplied official image, else the
+  // game's IGDB art, else an official page's share image.
+  if (a.image_url && isNewsOutlet(a.image_url))
+    return json(422, { error: "validation failed", errors: ["image_url: never use a news outlet's image"] });
+  if (!a.image_url) Object.assign(a, await findStoryImage(a, input.image_source_url));
+  if (!a.image_url) return json(422, { error: "validation failed", errors: [THUMBNAIL_REQUIRED] });
 
   const blockers = autoPublishBlockers(a);
   const publish = blockers.length === 0;
@@ -234,7 +237,10 @@ export async function updateFromBrain(slug: string, input: Record<string, unknow
     next.body = [update, ...next.body];
   }
 
-  if (!next.image_url) Object.assign(next, await findStoryImage(next));
+  if (next.image_url && isNewsOutlet(next.image_url))
+    return json(422, { error: "validation failed", errors: ["image_url: never use a news outlet's image"] });
+  if (!next.image_url) Object.assign(next, await findStoryImage(next, input.image_source_url));
+  if (!next.image_url) return json(422, { error: "validation failed", errors: [THUMBNAIL_REQUIRED] });
 
   const errors = validateArticle(next);
   if (errors.length) return json(422, { error: "validation failed", errors });
