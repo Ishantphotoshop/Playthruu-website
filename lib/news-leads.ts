@@ -1,19 +1,32 @@
-// Leads for the News Brain: the same five outlets' RSS feeds the app's
-// News tab used to show directly. These are *leads only* — the Brain uses
-// them to find stories worth covering, then verifies each one and writes
-// its own article. Headlines and blurbs here are for triage and must never
+// Leads for the News Brain: platform newsrooms plus the major outlets,
+// including the five whose RSS the app's News tab used to show directly.
+// These are *leads only* — the Brain uses them to find stories worth
+// covering, then verifies each one and writes its own article. Headlines and blurbs here are for triage and must never
 // be copied into a PlayThruu article.
 
+// tier 1 = the platform holder's own newsroom (enough to confirm a story
+// on its own); tier 2 = established outlets (leads to verify).
 const FEEDS = [
-  { source: "IGN", url: "https://feeds.ign.com/ign/games-all" },
-  { source: "GameSpot", url: "https://www.gamespot.com/feeds/news/" },
-  { source: "Eurogamer", url: "https://www.eurogamer.net/feed" },
-  { source: "PC Gamer", url: "https://www.pcgamer.com/rss/" },
-  { source: "Kotaku", url: "https://kotaku.com/rss" },
+  { source: "PlayStation Blog", tier: 1, url: "https://blog.playstation.com/feed/" },
+  { source: "Xbox Wire", tier: 1, url: "https://news.xbox.com/en-us/feed/" },
+  { source: "Steam News", tier: 1, url: "https://store.steampowered.com/feeds/news/" },
+  { source: "IGN", tier: 2, url: "https://feeds.ign.com/ign/games-all" },
+  { source: "GameSpot", tier: 2, url: "https://www.gamespot.com/feeds/news/" },
+  { source: "Eurogamer", tier: 2, url: "https://www.eurogamer.net/feed" },
+  { source: "PC Gamer", tier: 2, url: "https://www.pcgamer.com/rss/" },
+  { source: "Kotaku", tier: 2, url: "https://kotaku.com/rss" },
+  { source: "VGC", tier: 2, url: "https://www.videogameschronicle.com/feed/" },
+  { source: "Gematsu", tier: 2, url: "https://www.gematsu.com/feed" },
+  { source: "Polygon", tier: 2, url: "https://www.polygon.com/rss/index.xml" },
+  { source: "The Verge", tier: 2, url: "https://www.theverge.com/rss/games/index.xml" },
+  { source: "GamesIndustry.biz", tier: 2, url: "https://www.gamesindustry.biz/feed" },
+  { source: "Nintendo Life", tier: 2, url: "https://www.nintendolife.com/feeds/latest" },
+  { source: "Game Informer", tier: 2, url: "https://www.gameinformer.com/news.xml" },
 ];
 
 export type Lead = {
   source: string;
+  tier: number;
   title: string;
   link: string;
   published_at: string | null;
@@ -44,7 +57,7 @@ function tag(xml: string, name: string) {
   return m ? clean(m[1]) : "";
 }
 
-function parseFeed(source: string, xml: string): Lead[] {
+function parseFeed(source: string, tier: number, xml: string): Lead[] {
   const items = xml.match(/<item[\s>][\s\S]*?<\/item>|<entry[\s>][\s\S]*?<\/entry>/gi) ?? [];
   return items.map(function (item) {
     // Atom links are an attribute, RSS links are element text.
@@ -53,6 +66,7 @@ function parseFeed(source: string, xml: string): Lead[] {
     const parsed = date ? new Date(date) : null;
     return {
       source,
+      tier,
       title: tag(item, "title"),
       link: tag(item, "link") || (atomLink ? atomLink[1] : ""),
       published_at: parsed && !Number.isNaN(parsed.getTime()) ? parsed.toISOString() : null,
@@ -64,13 +78,13 @@ function parseFeed(source: string, xml: string): Lead[] {
 export async function fetchLeads(sinceHours: number) {
   const since = Date.now() - sinceHours * 36e5;
   const results = await Promise.allSettled(
-    FEEDS.map(async function ({ source, url }) {
+    FEEDS.map(async function ({ source, tier, url }) {
       const res = await fetch(url, {
         headers: { "User-Agent": "PlayThruuNewsBrain/1.0 (+https://playthruu.com/news)" },
         signal: AbortSignal.timeout(8000),
       });
       if (!res.ok) throw new Error(source + " " + res.status);
-      return parseFeed(source, await res.text());
+      return parseFeed(source, tier, await res.text());
     }),
   );
 

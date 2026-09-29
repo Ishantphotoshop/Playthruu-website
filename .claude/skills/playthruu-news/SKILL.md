@@ -20,7 +20,7 @@ defaults to https://playthruu.com):
 | Command | Does |
 |---|---|
 | `list` | Index of every article (incl. review queue and rejected) — your duplicate check |
-| `leads [hours]` | Recent headlines from IGN, GameSpot, Eurogamer, PC Gamer and Kotaku (default last 12h) — your primary lead list |
+| `leads [hours]` | Recent headlines from 15 feeds (default last 12h) — your primary lead list. `tier: 1` leads come from PlayStation Blog, Xbox Wire and Steam News: they ARE the official source |
 | `get <slug>` | Full article |
 | `create <file.json>` | New story |
 | `update <slug> <file.json>` | Change an existing story |
@@ -59,6 +59,14 @@ The **server** enforces the rules, so read its responses:
    before writing. If there is no official source but the outlet is
    reputable, write it as `reported` — it goes to the review queue. Skip
    only reviews/opinion/guides/deals roundups/listicles and trivia.
+   **Tier-1 leads** (PlayStation Blog, Xbox Wire, Steam News) are official
+   posts: read the post itself and a story can be `confirmed` straight from
+   it — these are your fastest auto-publishes, so cover every newsworthy one.
+   **Keep a lead ledger:** every lead gets a disposition in your final
+   summary — `created <slug>`, `updated <slug>`, `duplicate of <lead/slug>`,
+   or `skipped: <review|opinion|guide|deal-roundup|trivia|stale|not-news>`.
+   "Didn't get to it" is not a disposition; if you hit the per-run cap, say
+   `deferred` and it's the first thing the next run picks up.
    Then **discover** anything the feeds missed: search the web for gaming developments since the last run
    (look at the newest `updated_at`). Categories: announcements, releases,
    release-date changes, delays, trailers, gameplay reveals, DLC/expansions,
@@ -99,7 +107,7 @@ The **server** enforces the rules, so read its responses:
 
 A run that searches twice and gives up is a failed run. Every run must:
 
-- **Search broadly — at least 8 searches**, covering: the official
+- **Search broadly — at least 6 searches beyond the lead list**, covering: the official
   newsrooms (PlayStation Blog, Xbox Wire, Nintendo news, Steam/Valve,
   Epic), each major outlet (IGN, GameSpot, Eurogamer, VGC, PC Gamer,
   Polygon, Gematsu, GamesIndustry.biz), and targeted terms such as
@@ -117,11 +125,17 @@ A run that searches twice and gives up is a failed run. Every run must:
 - **Prefer queuing to skipping** for anything meaningful but uncertain: the
   review queue exists so an admin can decide. Skip only what's genuinely
   minor, stale, or already covered.
-- **Aim for coverage:** the News tab in the app now depends entirely on
-  you, so a normal run covers every newsworthy lead — typically 3–8
-  stories. Hard cap: 10 creates per run (quality over volume; the rest
-  wait for the next run). Zero is fine only when the leads and the full
-  search above genuinely turned up nothing.
+- **Volume matters — the app's News tab depends entirely on you.** A busy
+  news day has 15–30 newsworthy leads; a normal run should **create at
+  least 6 stories** whenever the lead ledger has that many newsworthy,
+  uncovered items, and aim for **8–12**. Hard cap: 15 creates per run.
+  Fewer than 6 is only acceptable when the ledger shows there genuinely
+  weren't more (every lead accounted for). Zero only on a truly dead day.
+- **Spend the time.** A proper run takes 10–25 minutes. Finishing in under
+  5 minutes almost always means corners were cut — go back to the ledger.
+- **Right-size the writing to keep volume up:** `standard` stories
+  180–280 words, `important` 280–450, `breaking` up to 500. Short and
+  accurate beats long and late.
 - **Revisit** each published story updated in the last 14 days with at
   least one targeted search, then `update` or `checked` it.
 
@@ -164,9 +178,14 @@ an outlet, say so: `"Konami announcement (via Inven Global)"`.
   rumour was confirmed (a queued rumour that becomes confirmed + High +
   tier-1 auto-publishes), and new sources via `add_sources` (appends; never
   drops history). Don't change the slug.
-- **Images:** set `image_url` only for official press-kit/promotional
-  assets the publisher offers for press use, with `image_credit`. Never
-  images from news sites. Otherwise leave it null — the site generates a
+- **Images:** always set `game` to the game's **exact official title**
+  (e.g. "Marvel's Wolverine", "Grand Theft Auto VI") — the server then
+  attaches that game's official art from IGDB automatically. If several
+  games share the title (originals, remakes, reboots), add the release
+  year: `"Castlevania (1986)"`, `"Resident Evil 4 (2023)"`. Leave
+  `image_url` null unless you have an official press-kit asset from the
+  publisher/platform (with `image_credit`). Never use images from news
+  sites. Stories without a single game (industry, hardware) get the
   PlayThruu card automatically.
 
 ## Quality check before every write

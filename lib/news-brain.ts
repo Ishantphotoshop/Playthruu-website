@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createServiceClient } from "@/lib/supabase-server";
+import { findGameArt } from "@/lib/news-images";
 import {
   EDITABLE_FIELDS,
   autoPublishBlockers,
@@ -136,6 +137,10 @@ export async function createFromBrain(input: Record<string, unknown>) {
       });
   }
 
+  // No image supplied: use the game's IGDB art (the PlayThruu card is the
+  // fallback when there's no exact match).
+  if (!a.image_url) Object.assign(a, await findGameArt(a.game));
+
   const blockers = autoPublishBlockers(a);
   const publish = blockers.length === 0;
   const now = new Date().toISOString();
@@ -228,6 +233,8 @@ export async function updateFromBrain(slug: string, input: Record<string, unknow
     const update: Block = { type: "update", date: today(), text: input.append_update.trim() };
     next.body = [update, ...next.body];
   }
+
+  if (!next.image_url) Object.assign(next, await findGameArt(next.game));
 
   const errors = validateArticle(next);
   if (errors.length) return json(422, { error: "validation failed", errors });
