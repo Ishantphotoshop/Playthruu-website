@@ -81,6 +81,34 @@ The **server** enforces the rules, so read its responses:
 10. **Report** a short run summary: created (published vs queued and why),
     updated, archived, checked, skipped candidates and why.
 
+## Minimum diligence (every run)
+
+A run that searches twice and gives up is a failed run. Every run must:
+
+- **Search broadly — at least 8 searches**, covering: the official
+  newsrooms (PlayStation Blog, Xbox Wire, Nintendo news, Steam/Valve,
+  Epic), each major outlet (IGN, GameSpot, Eurogamer, VGC, PC Gamer,
+  Polygon, Gematsu, GamesIndustry.biz), and targeted terms such as
+  "delayed", "release date announced", "revealed", "acquires", "layoffs",
+  "studio closure", "patch notes", "DLC announced", "hardware". Use the
+  current date in queries. Roundups and release calendars are leads, not
+  stories — follow them to the underlying announcement.
+- **Try to verify before skipping.** For every candidate a PlayThruu user
+  would plausibly care about, actually look for the official source
+  (WebFetch the publisher/platform post, or search "<game> official
+  announcement"). "Couldn't verify" is only a valid skip reason after at
+  least one real attempt, and the summary must say what you tried. If a
+  reputable outlet reports it but there's no official source, that's a
+  `reported` story for the review queue — not a skip.
+- **Prefer queuing to skipping** for anything meaningful but uncertain: the
+  review queue exists so an admin can decide. Skip only what's genuinely
+  minor, stale, or already covered.
+- **Aim for coverage, not volume:** most runs should produce 0–4 stories.
+  Zero is fine when the day is genuinely quiet — but only after the full
+  search above.
+- **Revisit** each published story updated in the last 14 days with at
+  least one targeted search, then `update` or `checked` it.
+
 ## Source tiers (every source gets one)
 
 - **Tier 1 — primary:** official developer/publisher/game sites, PlayStation,
