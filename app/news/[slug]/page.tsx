@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import BrandMark from "@/components/BrandMark";
+import SiteNav from "@/components/site/SiteNav";
+import SiteFooter from "@/components/site/SiteFooter";
 import VerificationBadge from "@/components/VerificationBadge";
 import { formatDate, getPublicArticle, type Source } from "@/lib/news";
 
@@ -68,19 +69,15 @@ export default async function NewsArticlePage({
   };
 
   return (
-    <main className="news-page">
+    <>
+    <SiteNav />
+    <main id="main" className="page page--narrow">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <Link href="/news" className="brand news-brand">
-        <BrandMark className="brand-mark" />
-        <span className="brand-word">PlayThruu</span>
-        <span className="news-brand-section">News</span>
-      </Link>
-
       <article className="news-article">
         {a.status === "archived" && (
           <p className="news-archived">
@@ -179,9 +176,11 @@ export default async function NewsArticlePage({
       </article>
 
       <Link href="/news" className="text-link news-back">
-        ← All news
+        All news
       </Link>
     </main>
+    <SiteFooter />
+    </>
   );
 }
 

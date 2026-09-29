@@ -1,30 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Unbounded, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const fraunces = Fraunces({
+// The app's two faces: Unbounded for the PlayThruu wordmark and display
+// headlines, Manrope for everything else. Nothing else, on purpose.
+const unbounded = Unbounded({
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["400", "500", "600"],
-  variable: "--font-display",
+  weight: ["500", "700", "800"],
+  variable: "--font-brand",
 });
 
-const plexSans = IBM_Plex_Sans({
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-sans",
 });
 
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
-});
-
-const title = "PlayThruu — your gaming diary";
+const title = "PlayThruu — every game you ever played";
 const description =
-  "Log, rate, and review the games you play. Follow friends and see what they're playing.";
+  "One diary for every game you play. Log it, rate it, review it, and see what your friends are playing. Opens 20 October.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -62,7 +57,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#14100b",
+  themeColor: "#14181c",
 };
 
 const jsonLd = {
@@ -79,24 +74,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={unbounded.variable + " " + manrope.variable}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body
-        className={
-          fraunces.variable +
-          " " +
-          plexSans.variable +
-          " " +
-          plexMono.variable +
-          " antialiased"
-        }
-      >
-        <a href="#top" className="skip-link">
+      <body>
+        <a href="#main" className="skip-link">
           Skip to content
         </a>
         {children}

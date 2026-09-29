@@ -41,7 +41,7 @@ export default function LoginForm() {
         autoComplete="current-password"
         required
       />
-      <button className="button button-primary" disabled={busy}>
+      <button className="btn btn--accent" disabled={busy}>
         {busy ? "Signing in…" : "Sign in"}
       </button>
       {error && (

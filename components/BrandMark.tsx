@@ -2,7 +2,7 @@ export default function BrandMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 120 120" className={className} aria-hidden="true">
       <path
-        fill="#F2F5FA"
+        fill="currentColor"
         d="M 110,52.5 L 60,52.5 A 7.5,7.5 0 0,0 60,67.5 L 110,67.5 A 2.9272,2.9272 0 0,1 112.8625,71.0248 A 54,54 0 1,1 112.8625,48.9752 A 2.9272,2.9272 0 0,1 110,52.5 Z"
       />
     </svg>

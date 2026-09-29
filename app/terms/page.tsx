@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import BrandMark from "@/components/BrandMark";
+import SiteNav from "@/components/site/SiteNav";
+import SiteFooter from "@/components/site/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Terms of Use",
@@ -8,11 +9,9 @@ export const metadata: Metadata = {
 
 export default function TermsOfUse() {
   return (
-    <main className="legal-page">
-      <Link href="/" className="brand legal-page-brand">
-        <BrandMark className="brand-mark" />
-        <span className="brand-word">PlayThruu</span>
-      </Link>
+    <>
+    <SiteNav />
+    <main id="main" className="page page--narrow legal-page">
 
       <h1>Terms of Use</h1>
       <p className="legal-updated">Last updated: August 25, 2026</p>
@@ -80,9 +79,8 @@ export default function TermsOfUse() {
         <a href="mailto:hello@playthruu.com">hello@playthruu.com</a>.
       </p>
 
-      <Link href="/" className="text-link legal-page-back">
-        ← Back to PlayThruu
-      </Link>
     </main>
+    <SiteFooter />
+    </>
   );
 }

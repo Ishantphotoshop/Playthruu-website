@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useId, useRef, useState } from "react";
 import { joinWaitlist } from "@/app/actions";
 
 function detectSource(): string {
@@ -17,12 +17,13 @@ function detectSource(): string {
   return "direct";
 }
 
+// Used twice on the homepage (hero and the closing section), so ids are
+// generated per instance rather than hard-coded.
 export default function WaitlistForm() {
-  const [status, setStatus] = useState<
-    "idle" | "submitting" | "done" | "error"
-  >("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const mountedAt = useRef(0);
+  const id = useId();
 
   useEffect(function () {
     mountedAt.current = Date.now();
@@ -52,48 +53,36 @@ export default function WaitlistForm() {
 
   if (status === "done") {
     return (
-      <p className="form-success" role="status" aria-live="polite">
-        You&rsquo;re on the list. <strong>See you on the other side.</strong>
+      <p className="waitlist-done" role="status" aria-live="polite">
+        <span className="stamp stamp--playing">You&rsquo;re in</span>
+        We&rsquo;ll email you when PlayThruu opens on 20 October.
       </p>
     );
   }
 
   return (
-    <form className="waitlist-form" onSubmit={handleSubmit}>
-      <div className="waitlist-form-row">
-        <label htmlFor="email" className="sr-only">
-          Email address
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          placeholder="your@email.com"
-          aria-label="Email address"
-          aria-describedby={status === "error" ? "waitlist-error" : undefined}
-          aria-invalid={status === "error" || undefined}
-          disabled={status === "submitting"}
-        />
-        <input
-          type="text"
-          name="company"
-          className="hp-field"
-          tabIndex={-1}
-          autoComplete="off"
-          aria-hidden="true"
-        />
-        <button
-          type="submit"
-          className="button button-primary"
-          disabled={status === "submitting"}
-        >
-          {status === "submitting" ? "Joining…" : "Count me in"}
-        </button>
-      </div>
+    <form className="waitlist-form" onSubmit={handleSubmit} noValidate={false}>
+      <label htmlFor={id + "-email"} className="sr-only">
+        Email address
+      </label>
+      <input
+        id={id + "-email"}
+        name="email"
+        type="email"
+        required
+        autoComplete="email"
+        placeholder="you@email.com"
+        aria-describedby={status === "error" ? id + "-error" : undefined}
+        aria-invalid={status === "error" || undefined}
+        disabled={status === "submitting"}
+      />
+      <input type="text" name="company" className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+      <button type="submit" className="btn btn--accent" disabled={status === "submitting"}>
+        {status === "submitting" ? "Joining…" : "Join the waitlist"}
+      </button>
       {status === "error" && (
-        <p id="waitlist-error" className="form-error" role="alert">
-          {errorMessage || "Something went wrong — try again."}
+        <p id={id + "-error"} className="form-error" role="alert">
+          {errorMessage || "That didn't go through. Try again in a moment."}
         </p>
       )}
     </form>

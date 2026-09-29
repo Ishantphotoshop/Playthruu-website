@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import BrandMark from "@/components/BrandMark";
+import SiteNav from "@/components/site/SiteNav";
+import SiteFooter from "@/components/site/SiteFooter";
 import VerificationBadge from "@/components/VerificationBadge";
 import {
   formatDate,
@@ -24,47 +25,39 @@ export default async function NewsIndex() {
   const { top, latest } = rankFeed(await getPublishedArticles());
 
   return (
-    <main className="news-page">
-      <Link href="/" className="brand news-brand">
-        <BrandMark className="brand-mark" />
-        <span className="brand-word">PlayThruu</span>
-      </Link>
+    <>
+      <SiteNav />
+      <main id="main" className="page page--narrow">
+        <header className="news-masthead">
+          <h1 className="display-1">News</h1>
+          <p className="lead">
+            Gaming news checked against official sources. Every story shows how solid it is and lists where it came
+            from.
+          </p>
+        </header>
 
-      <header className="news-masthead">
-        <p className="news-kicker">The PlayThruu wire</p>
-        <h1>News</h1>
-        <p className="news-lede">
-          What happened, what&rsquo;s confirmed, and why it matters. Every
-          story shows how solid it is and lists its sources.
-        </p>
-      </header>
+        {top.length + latest.length === 0 && <p className="news-empty">No stories yet.</p>}
 
-      {top.length + latest.length === 0 && (
-        <p className="news-empty">No stories yet.</p>
-      )}
+        {top.length > 0 && (
+          <section aria-labelledby="top-heading">
+            <h2 id="top-heading" className="news-section-heading">
+              Top stories
+            </h2>
+            <Feed articles={top} />
+          </section>
+        )}
 
-      {top.length > 0 && (
-        <section aria-labelledby="top-heading">
-          <h2 id="top-heading" className="news-section-heading">
-            Top stories
-          </h2>
-          <Feed articles={top} />
-        </section>
-      )}
-
-      {latest.length > 0 && (
-        <section aria-labelledby="latest-heading">
-          <h2 id="latest-heading" className="news-section-heading">
-            Latest
-          </h2>
-          <Feed articles={latest} />
-        </section>
-      )}
-
-      <Link href="/" className="text-link news-back">
-        ← Back to PlayThruu
-      </Link>
-    </main>
+        {latest.length > 0 && (
+          <section aria-labelledby="latest-heading">
+            <h2 id="latest-heading" className="news-section-heading">
+              Latest
+            </h2>
+            <Feed articles={latest} />
+          </section>
+        )}
+      </main>
+      <SiteFooter />
+    </>
   );
 }
 
@@ -77,19 +70,23 @@ function Feed({ articles }: { articles: PublicArticle[] }) {
         return (
           <li key={a.slug}>
             <Link href={"/news/" + a.slug} className="news-card">
-              <span className="news-card-meta">
-                {a.importance === "breaking" && (
-                  <span className="news-breaking">Breaking</span>
-                )}
-                <span className="news-category">{a.category}</span>
-                <VerificationBadge status={a.verification_status} />
-                <time dateTime={a.updated_at}>
-                  {updated ? "Updated " : ""}
-                  {formatDate(a.updated_at)}
-                </time>
+              <span className="news-card__image">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.image_url || "/news/" + a.slug + "/thumb"} alt="" loading="lazy" />
               </span>
-              <h3>{a.title}</h3>
-              <p>{a.card_description}</p>
+              <span className="news-card__text">
+                <span className="news-card-meta">
+                  {a.importance === "breaking" && <span className="news-breaking">Breaking</span>}
+                  <span className="news-category">{a.category}</span>
+                  <VerificationBadge status={a.verification_status} />
+                  <time dateTime={a.updated_at}>
+                    {updated ? "Updated " : ""}
+                    {formatDate(a.updated_at)}
+                  </time>
+                </span>
+                <h3>{a.title}</h3>
+                <p>{a.card_description}</p>
+              </span>
             </Link>
           </li>
         );
