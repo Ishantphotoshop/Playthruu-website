@@ -1,98 +1,114 @@
 "use client";
 
-import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Poster, Stamp, Stars } from "@/components/ui";
 import WaitlistForm from "@/components/WaitlistForm";
-import { SHELF } from "@/lib/showcase";
+import { FEATURED, shelfFor, type Featured } from "@/lib/showcase";
+import { useLivingWall, type WallTuning } from "./useLivingWall";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+// Alternating directions so the wall looks busy without any one thing
+// racing: the numbers are px/s at rest, about one full loop a minute.
+const TUNING: WallTuning = {
+  idle: [-13, 19, -10, 16, -12],
+  follow: [0.16, 0.34, 0.1, 0.28, 0.13],
+  seeds: [0.2, 0.68, 0.38, 0.85, 0.55],
+  pad: 0.35,
+  parallax: 0.12,
+};
 
-// Scroll speed of each shelf column, so the wall shears as you scroll.
-const DRIFT = [-18, -34, -10, -28, -14];
+// Rendered slot width (px) per breakpoint, so the browser downloads the
+// 264px cover on standard screens and the 528px one only where it's needed.
+const SIZES = "(max-width: 599px) 126px, 190px";
 
-export default function Hero() {
+// Each column is the same few posters stacked `sets` times. Three is
+// enough for any normal screen; the effect below adds more on very tall
+// ones. More stacks never move what's already on screen.
+const MIN_SETS = 3;
+const MAX_SETS = 6;
+
+export default function Hero({ featured = FEATURED }: { featured?: Featured }) {
   const root = useRef<HTMLElement>(null);
+  const columns = useMemo(() => shelfFor(featured), [featured]);
+  const [sets, setSets] = useState(MIN_SETS);
 
-  useGSAP(
-    function () {
-      const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", function () {
-        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-        tl.from(".hero__line > span", { yPercent: 115, duration: 1.1, stagger: 0.09 })
-          .from(".shelf__col", { yPercent: 40, opacity: 0, duration: 1.6, stagger: 0.08, ease: "expo.out" }, 0.05)
-          .from(".hero__lede, .hero__form, .hero__launch", { y: 18, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.45)
-          // The app's stamps land on the covers like ink on a page.
-          .from(
-            ".shelf .stamp",
-            { scale: 2.6, rotate: -16, opacity: 0, duration: 0.5, stagger: 0.14, ease: "back.out(2.2)" },
-            0.9,
-          )
-          .from(
-            ".shelf .stars",
-            { clipPath: "inset(0 100% 0 0)", duration: 0.7, stagger: 0.1, ease: "power2.out" },
-            1.1,
-          );
+  const wall = useLivingWall(root, TUNING);
 
-        gsap.utils.toArray<HTMLElement>(".shelf__col").forEach(function (col, i) {
-          gsap.to(col, {
-            yPercent: DRIFT[i % DRIFT.length],
-            ease: "none",
-            scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: 0.6 },
-          });
-        });
-        gsap.to(".hero__content", {
-          yPercent: -18,
-          opacity: 0.2,
-          ease: "none",
-          scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true },
-        });
+  // A stack was added: rewrite the column positions now, after the DOM has
+  // the new stack and before the browser paints.
+  useLayoutEffect(() => wall.current.rewrite(), [sets, wall]);
+
+  useEffect(function () {
+    const hero = root.current;
+    if (!hero) return;
+    // A column must hold the lead-in, one loop, and the visible height, so
+    // no gap can open at the bottom at any phase.
+    const grow = () => {
+      let shortest = Infinity;
+      hero.querySelectorAll<HTMLElement>(".shelf__set:first-child").forEach(function (el) {
+        if (el.offsetHeight > 0) shortest = Math.min(shortest, el.offsetHeight);
       });
-      return () => mm.revert();
-    },
-    { scope: root },
-  );
+      if (!Number.isFinite(shortest)) return;
+      const need = Math.ceil(1 + TUNING.pad + (hero.clientHeight * 1.12 + 320) / shortest);
+      setSets((s) => Math.min(MAX_SETS, Math.max(s, need)));
+    };
+    grow();
+    const ro = new ResizeObserver(grow);
+    ro.observe(hero);
+    return () => ro.disconnect();
+  }, []);
 
   return (
     <section ref={root} className="hero" id="top">
       <div className="hero__wall" aria-hidden="true">
         <div className="shelf">
-          {SHELF.map(function (col, c) {
-            // Each column repeats once so it stays full while it drifts.
+          {columns.map(function (col, c) {
             return (
-              <div className="shelf__col" key={c}>
-                {[...col, ...col].map(function (item, i) {
-                  return (
-                    <div className="shelf__item" key={i}>
-                      <Poster game={item.game} priority={i < 2} />
-                      {item.status && <Stamp status={item.status} className="shelf__stamp" />}
-                      {item.rating && (
-                        <span className="shelf__rating">
-                          <Stars rating={item.rating} size={13} />
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
+              <div className="shelf__col" key={c} style={{ "--i": c } as CSSProperties}>
+                <div
+                  className="shelf__track"
+                  style={{ transform: "translate3d(0," + (-((TUNING.pad + TUNING.seeds[c]) / MIN_SETS) * 100).toFixed(4) + "%,0)" }}
+                >
+                  {Array.from({ length: sets }, function (_, s) {
+                    return (
+                      <div className="shelf__set" key={s}>
+                        {col.map(function (item, r) {
+                          return (
+                            <div
+                              className="shelf__item"
+                              key={r}
+                              data-featured={item.featured ? "" : undefined}
+                              style={{ "--d": c * 0.12 + r * 0.06 } as CSSProperties}
+                            >
+                              <Poster game={item.game} sizes={SIZES} />
+                              {item.status && <Stamp status={item.status} className="shelf__stamp" />}
+                              {item.rating && (
+                                <span className="shelf__rating">
+                                  <Stars rating={item.rating} size={13} />
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
         </div>
       </div>
+      <div className="hero__scrim" aria-hidden="true" />
 
       <div className="container hero__content">
         <h1 className="hero__title">
-          <span className="hero__line">
-            <span>Every game</span>
-          </span>
-          <span className="hero__line">
-            <span>you ever</span>
-          </span>
-          <span className="hero__line">
-            <span>played.</span>
-          </span>
+          {["Every game", "you ever", "played."].map(function (line, n) {
+            return (
+              <span className="hero__line" key={line}>
+                <span style={{ "--n": n } as CSSProperties}>{line}</span>
+              </span>
+            );
+          })}
         </h1>
         <p className="hero__lede">
           One diary for everything you play. Log it, rate it, write about it, and see what your friends are

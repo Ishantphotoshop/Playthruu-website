@@ -62,17 +62,64 @@ export const PEOPLE = {
   theo: { name: "Theo", handle: "theo_", hue: 240 },
 } satisfies Record<string, Person>;
 
+// The game the opening of the page is built around: it takes the focal
+// slot on the hero shelf and is the subject of the pinned "log a game"
+// scene right after it. The review is an example, like the people.
+export type Featured = {
+  game: Game; // game.art is the landscape key art behind the log scene
+  artPosition: string; // CSS object-position, so the crop lands on the subject
+  artPositionMobile?: string; // the phone layout is a tall, narrow crop
+  artOpacity?: number; // brightness of the backdrop; dark art needs more than bright art
+  review: string;
+  rating: number;
+  date: string;
+  likes: number;
+};
+
+export const FEATURED: Featured = {
+  // Chosen over Wolverine and Elden Ring: it is the only candidate that is
+  // cool-toned like the app's slate ground (no yellow fighting the green
+  // accent), and its art stays visible behind the copy instead of
+  // dissolving. Kratos' head sits just above the log card at 0% 30%.
+  game: { ...GAMES.gowr, art: "ar3se9", year: 2022, studio: "Santa Monica Studio" },
+  artPosition: "0% 30%",
+  artPositionMobile: "58% 40%",
+  artOpacity: 0.72,
+  review: "Kratos and Atreus finally get room to breathe. The combat is better than ever and the ending lands.",
+  rating: 4.5,
+  date: "24 Sep 2026",
+  likes: 22,
+};
+
 // The hero's shelf: five columns of someone's diary. A few posters carry
-// the app's stamp and star row, the way they do in a real feed.
-export type ShelfItem = { game: Game; status?: Status; rating?: number };
+// the app's stamp and star row, the way they do in a real feed. The
+// featured game always takes the same focal slot; if it also appears
+// elsewhere on the shelf, that copy is swapped for a filler so no cover
+// shows twice.
+export type ShelfItem = { game: Game; status?: Status; rating?: number; featured?: boolean };
 const G = GAMES;
-export const SHELF: ShelfItem[][] = [
+const BASE_SHELF: ShelfItem[][] = [
   [{ game: G.eldenRing, status: "played", rating: 5 }, { game: G.stardew }, { game: G.re4, rating: 4 }, { game: G.hades }],
   [{ game: G.tlou2 }, { game: G.wolverine, status: "playing" }, { game: G.celeste, rating: 4.5 }, { game: G.cyberpunk }],
   [{ game: G.gta6, status: "backlog" }, { game: G.bg3, rating: 5 }, { game: G.portal2 }, { game: G.ff7, status: "dropped" }],
   [{ game: G.spiderMan2 }, { game: G.silksong, status: "playing" }, { game: G.rdr2, rating: 4.5 }, { game: G.persona5 }],
   [{ game: G.zelda, rating: 5 }, { game: G.gowr }, { game: G.yotei, status: "played", rating: 4 }, { game: G.discoElysium }],
 ];
+const FOCAL = { col: 1, row: 1 };
+const FILLERS = [G.wolverine, G.witcher3, G.horizon, G.ghostOfTsushima, G.itTakesTwo, G.cuphead, G.hades2, G.ds2];
+
+export function shelfFor(featured: Featured = FEATURED): ShelfItem[][] {
+  const inShelf = new Set(BASE_SHELF.flat().map((i) => i.game.cover));
+  inShelf.delete(BASE_SHELF[FOCAL.col][FOCAL.row].game.cover);
+  const fillers = FILLERS.filter((f) => !inShelf.has(f.cover) && f.cover !== featured.game.cover);
+  return BASE_SHELF.map((col, c) =>
+    col.map((item, r) => {
+      if (c === FOCAL.col && r === FOCAL.row) return { game: featured.game, status: "playing" as Status, featured: true };
+      if (item.game.cover === featured.game.cover) return { ...item, game: fillers.shift() ?? item.game };
+      return item;
+    }),
+  );
+}
 
 export const FRIEND_ACTIVITY: { game: Game; who: Person; rating?: number; review?: boolean }[] = [
   { game: G.yotei, who: PEOPLE.maya, rating: 4.5, review: true },
@@ -95,9 +142,6 @@ export const NOW_PLAYING: { game: Game; who: Person }[] = [
   { game: G.horizon, who: PEOPLE.leo },
   { game: G.cuphead, who: PEOPLE.jordan },
 ];
-
-export const LOG_REVIEW =
-  "Insomniac finally let Logan be Logan. The combat never lets up, and the last act is the best thing they've made.";
 
 // Ghost of Yōtei's game page. Illustrative community numbers.
 export const GAME_PAGE = {

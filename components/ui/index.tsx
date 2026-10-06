@@ -19,21 +19,30 @@ export function Wordmark({ size = "md" }: { size?: "md" | "lg" }) {
 export function Poster({
   game,
   size = "cover_big_2x",
+  sizes,
   className = "",
   priority = false,
 }: {
   game: Game;
   size?: "cover_big" | "cover_big_2x";
+  // When the slot's rendered width is known, pass it: the browser then
+  // picks the 264px or 528px cover for the screen's pixel density instead
+  // of always downloading the large one.
+  sizes?: string;
   className?: string;
   priority?: boolean;
 }) {
+  const small = coverUrl(game.cover, "cover_big");
+  const large = coverUrl(game.cover, "cover_big_2x");
   return (
     <span className={"poster " + className}>
       {/* IGDB serves fixed sizes, so a plain img with the right size is
           lighter than routing every cover through an image optimiser. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={coverUrl(game.cover, size)}
+        src={sizes ? small : size === "cover_big" ? small : large}
+        srcSet={sizes ? small + " 264w, " + large + " 528w" : undefined}
+        sizes={sizes}
         alt={game.title}
         loading={priority ? "eager" : "lazy"}
         decoding="async"

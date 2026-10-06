@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type CSSProperties } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Poster, Stamp } from "@/components/ui";
-import { GAMES, LOG_REVIEW, artUrl } from "@/lib/showcase";
+import { FEATURED, artUrl, type Featured } from "@/lib/showcase";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -15,14 +15,13 @@ const BEATS = [
   { title: "Say what you thought.", body: "One line or a full review. Spoilers stay hidden until someone taps to read them." },
 ];
 
-const RATING = 4.5;
-const game = GAMES.wolverine;
 
 // The markup is the finished log (PLAYED, 4½ stars, full review), so it
 // reads correctly with no JavaScript and under reduced motion. The
 // animation only ever plays toward that state.
-export default function LogStory() {
+export default function LogStory({ featured = FEATURED }: { featured?: Featured }) {
   const root = useRef<HTMLElement>(null);
+  const { game, rating: RATING, review, date, likes } = featured;
 
   useGSAP(
     function () {
@@ -66,7 +65,7 @@ export default function LogStory() {
   return (
     <section ref={root} className="log" id="log" aria-labelledby="log-title">
       <div className="log__stage">
-        <div className="log__backdrop" aria-hidden="true">
+        <div className="log__backdrop" aria-hidden="true" style={{ "--art-pos": featured.artPosition, "--art-pos-m": featured.artPositionMobile ?? featured.artPosition, "--art-o": featured.artOpacity ?? 0.42 } as CSSProperties}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={artUrl(game.art!)} alt="" loading="lazy" />
         </div>
@@ -110,10 +109,10 @@ export default function LogStory() {
                     );
                   })}
                 </span>
-                <span className="log-card__date">21 Sep 2026</span>
+                <span className="log-card__date">{date}</span>
               </div>
               <p className="log-card__review">
-                {LOG_REVIEW.split(" ").map((w, i) => (
+                {review.split(" ").map((w, i) => (
                   <span key={i} className="log__word">
                     {w}{" "}
                   </span>
@@ -125,7 +124,7 @@ export default function LogStory() {
                   <svg viewBox="3 4 18 18" fill="currentColor" aria-hidden="true">
                     <path d="M12 20.3 4.3 12.6A4.7 4.7 0 0 1 11 6l1 1 1-1a4.7 4.7 0 0 1 6.7 6.6z" />
                   </svg>
-                  24 likes
+                  {likes} likes
                 </span>
               </div>
             </div>
