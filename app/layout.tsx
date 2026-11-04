@@ -19,7 +19,7 @@ const manrope = Manrope({
 
 const title = "PlayThruu — every game you ever played";
 const description =
-  "One diary for every game you play. Log it, rate it, review it, and see what your friends are playing. Opens 20 October.";
+  "One diary for every game you play. Log it, rate it, review it, and see what your friends are playing. Opens on Dhanteras, 6 November.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(

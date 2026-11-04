@@ -17,7 +17,7 @@ export default function WaitlistSection({ memberCount }: { memberCount: number |
           ))}
         </div>
         <h2 id="waitlist-title" className="display-1 waitlist__title">
-          PlayThruu opens 20 October.
+          PlayThruu opens on Dhanteras, 6 November.
         </h2>
         <p className="lead waitlist__lede">Join the waitlist and you&rsquo;re first in when the doors open.</p>
         <CountdownTimer />

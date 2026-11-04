@@ -41,7 +41,7 @@ export default async function Image() {
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ width: 8, height: 8, borderRadius: 99, background: "#00e054" }} />
           <div style={{ display: "flex", fontSize: 20, color: "#99aabb", letterSpacing: "0.02em" }}>
-            The diary for every game you play. Opens 20 October.
+            The diary for every game you play. Opens on Dhanteras, 6 November.
           </div>
         </div>
       </div>

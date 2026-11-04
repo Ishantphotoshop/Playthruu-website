@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-// Launch: 20 October 2026, midnight India time.
-export const LAUNCH_DATE = new Date("2026-10-20T00:00:00+05:30").getTime();
+// Dhanteras: 6 November 2026, midnight India time.
+export const LAUNCH_DATE = new Date("2026-11-06T00:00:00+05:30").getTime();
 
 function getTimeLeft() {
   const diff = Math.max(LAUNCH_DATE - Date.now(), 0);
@@ -59,7 +59,7 @@ export default function CountdownTimer() {
   }, []);
 
   return (
-    <div className="countdown" role="timer" aria-label="Time until PlayThruu opens on 20 October">
+    <div className="countdown" role="timer" aria-label="Time until Dhanteras on 6 November">
       {UNITS.map((unit) => (
         <div key={unit.key} className="countdown__unit">
           <span className="countdown__value">{time ? String(time[unit.key]).padStart(2, "0") : "00"}</span>

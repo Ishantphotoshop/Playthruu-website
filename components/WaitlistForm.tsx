@@ -55,7 +55,7 @@ export default function WaitlistForm() {
     return (
       <p className="waitlist-done" role="status" aria-live="polite">
         <span className="stamp stamp--playing">You&rsquo;re in</span>
-        We&rsquo;ll email you when PlayThruu opens on 20 October.
+        We&rsquo;ll email you when PlayThruu opens on Dhanteras, 6 November.
       </p>
     );
   }

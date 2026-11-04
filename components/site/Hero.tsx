@@ -117,7 +117,7 @@ export default function Hero({ featured = FEATURED }: { featured?: Featured }) {
         <div className="hero__form">
           <WaitlistForm />
         </div>
-        <p className="hero__launch">Opens 20 October. The waitlist gets in first.</p>
+        <p className="hero__launch">Opens on Dhanteras, 6 November. The waitlist gets in first.</p>
       </div>
     </section>
   );
