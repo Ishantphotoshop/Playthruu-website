@@ -65,6 +65,10 @@ export default async function AdminNews({
         </form>
       </div>
 
+      <p>
+        <Link href="/admin/news/new" className="admin-button is-primary">New article</Link>
+      </p>
+
       <nav className="admin-tabs" aria-label="Article status">
         {[...STATUS.filter((s) => s !== "rejected"), "rejected", "flagged"].map(
           (t) => (

@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAdmin } from "@/lib/supabase-server";
 import {
+  EDITABLE_FIELDS,
   textToBody,
   validateArticle,
   type ArticleInput,
   type NewsArticle,
   type Source,
 } from "@/lib/news";
+import { THUMBNAIL_REQUIRED, findStoryImage, isNewsOutlet } from "@/lib/news-images";
 
 // Admin overrides. Every one runs as the signed-in user, so RLS
 // (is_news_admin) is the real gate; the explicit check just gives a clear
@@ -24,6 +26,10 @@ async function requireAdmin() {
 
 function back(id: string, key: "msg" | "error", text: string): never {
   redirect("/admin/news/" + id + "?" + key + "=" + encodeURIComponent(text));
+}
+
+function newArticleBack(key: "msg" | "error", text: string): never {
+  redirect("/admin/news/new?" + key + "=" + encodeURIComponent(text));
 }
 
 function revalidateNews(slug: string) {
@@ -55,6 +61,52 @@ function parseSources(text: string): Source[] {
       const [tier, name, url] = line.split("|").map((p) => p.trim());
       return { tier: Number(tier) as 1 | 2 | 3, name, ...(url ? { url } : {}) };
     });
+}
+
+export async function createArticleFromJson(form: FormData) {
+  const { client, actor } = await requireAdmin();
+  let raw: Record<string, unknown>;
+  try {
+    raw = JSON.parse(String(form.get("article") ?? ""));
+  } catch {
+    newArticleBack("error", "Enter valid article JSON.");
+  }
+
+  const slug = String(raw.slug ?? "");
+  const input = Object.fromEntries(EDITABLE_FIELDS.map((key) => [key, raw[key]])) as ArticleInput;
+  const errors = validateArticle({ ...input, slug });
+  if (errors.length) newArticleBack("error", errors.join("\n"));
+  if (input.image_url && isNewsOutlet(input.image_url))
+    newArticleBack("error", "Use an official/licensed image, not a news outlet image.");
+  if (!input.image_url) Object.assign(input, await findStoryImage(input, raw.image_source_url));
+  if (!input.image_url) newArticleBack("error", THUMBNAIL_REQUIRED);
+
+  const { data: existing } = await client.from("news_articles").select("id").eq("slug", slug).maybeSingle();
+  if (existing) newArticleBack("error", "That slug already exists.");
+
+  const now = new Date().toISOString();
+  const { data, error } = await client
+    .from("news_articles")
+    .insert({
+      ...input,
+      slug,
+      status: "review",
+      lifecycle: input.confidence_level === "Low" ? "discovered" : "verified",
+      published_at: null,
+      updated_at: now,
+      last_checked_at: now,
+    })
+    .select("id,slug")
+    .single();
+  if (error) newArticleBack("error", error.message);
+
+  await client.from("news_events").insert({
+    article_id: data.id,
+    article_slug: data.slug,
+    actor,
+    action: "created",
+  });
+  redirect("/admin/news/" + data.id + "?msg=" + encodeURIComponent("Created in the review queue."));
 }
 
 export async function saveArticle(id: string, form: FormData) {
