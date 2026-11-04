@@ -75,6 +75,7 @@ export async function createArticleFromJson(form: FormData) {
   if (!articles.length || !articles.every((article) => article && typeof article === "object" && !Array.isArray(article)))
     newArticleBack("error", "Enter one article object or an array of article objects.");
 
+  let created = 0;
   for (const raw of articles as Record<string, unknown>[]) {
     const slug = String(raw.slug ?? "");
     const input = Object.fromEntries(EDITABLE_FIELDS.map((key) => [key, raw[key]])) as ArticleInput;
@@ -86,7 +87,7 @@ export async function createArticleFromJson(form: FormData) {
     if (!input.image_url) newArticleBack("error", slug + ": " + THUMBNAIL_REQUIRED);
 
     const { data: existing } = await client.from("news_articles").select("id").eq("slug", slug).maybeSingle();
-    if (existing) newArticleBack("error", slug + ": that slug already exists.");
+    if (existing) continue;
 
     const now = new Date().toISOString();
     const { data, error } = await client
@@ -110,8 +111,9 @@ export async function createArticleFromJson(form: FormData) {
       actor,
       action: "created",
     });
+    created += 1;
   }
-  redirect("/admin/news?msg=" + encodeURIComponent(`Created ${articles.length} review draft${articles.length === 1 ? "" : "s"}.`));
+  redirect("/admin/news?msg=" + encodeURIComponent(`Created ${created} review draft${created === 1 ? "" : "s"}; skipped ${articles.length - created} existing article${articles.length - created === 1 ? "" : "s"}.`));
 }
 
 export async function saveArticle(id: string, form: FormData) {
