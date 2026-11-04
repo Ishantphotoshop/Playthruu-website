@@ -65,48 +65,53 @@ function parseSources(text: string): Source[] {
 
 export async function createArticleFromJson(form: FormData) {
   const { client, actor } = await requireAdmin();
-  let raw: Record<string, unknown>;
+  let payload: unknown;
   try {
-    raw = JSON.parse(String(form.get("article") ?? ""));
+    payload = JSON.parse(String(form.get("article") ?? ""));
   } catch {
     newArticleBack("error", "Enter valid article JSON.");
   }
+  const articles = Array.isArray(payload) ? payload : [payload];
+  if (!articles.length || !articles.every((article) => article && typeof article === "object" && !Array.isArray(article)))
+    newArticleBack("error", "Enter one article object or an array of article objects.");
 
-  const slug = String(raw.slug ?? "");
-  const input = Object.fromEntries(EDITABLE_FIELDS.map((key) => [key, raw[key]])) as ArticleInput;
-  const errors = validateArticle({ ...input, slug });
-  if (errors.length) newArticleBack("error", errors.join("\n"));
-  if (input.image_url && isNewsOutlet(input.image_url))
-    newArticleBack("error", "Use an official/licensed image, not a news outlet image.");
-  if (!input.image_url) Object.assign(input, await findStoryImage(input, raw.image_source_url));
-  if (!input.image_url) newArticleBack("error", THUMBNAIL_REQUIRED);
+  for (const raw of articles as Record<string, unknown>[]) {
+    const slug = String(raw.slug ?? "");
+    const input = Object.fromEntries(EDITABLE_FIELDS.map((key) => [key, raw[key]])) as ArticleInput;
+    const errors = validateArticle({ ...input, slug });
+    if (errors.length) newArticleBack("error", slug + ": " + errors.join("\n"));
+    if (input.image_url && isNewsOutlet(input.image_url))
+      newArticleBack("error", slug + ": use an official/licensed image, not a news outlet image.");
+    if (!input.image_url) Object.assign(input, await findStoryImage(input, raw.image_source_url));
+    if (!input.image_url) newArticleBack("error", slug + ": " + THUMBNAIL_REQUIRED);
 
-  const { data: existing } = await client.from("news_articles").select("id").eq("slug", slug).maybeSingle();
-  if (existing) newArticleBack("error", "That slug already exists.");
+    const { data: existing } = await client.from("news_articles").select("id").eq("slug", slug).maybeSingle();
+    if (existing) newArticleBack("error", slug + ": that slug already exists.");
 
-  const now = new Date().toISOString();
-  const { data, error } = await client
-    .from("news_articles")
-    .insert({
-      ...input,
-      slug,
-      status: "review",
-      lifecycle: input.confidence_level === "Low" ? "discovered" : "verified",
-      published_at: null,
-      updated_at: now,
-      last_checked_at: now,
-    })
-    .select("id,slug")
-    .single();
-  if (error) newArticleBack("error", error.message);
+    const now = new Date().toISOString();
+    const { data, error } = await client
+      .from("news_articles")
+      .insert({
+        ...input,
+        slug,
+        status: "review",
+        lifecycle: input.confidence_level === "Low" ? "discovered" : "verified",
+        published_at: null,
+        updated_at: now,
+        last_checked_at: now,
+      })
+      .select("id,slug")
+      .single();
+    if (error) newArticleBack("error", slug + ": " + error.message);
 
-  await client.from("news_events").insert({
-    article_id: data.id,
-    article_slug: data.slug,
-    actor,
-    action: "created",
-  });
-  redirect("/admin/news/" + data.id + "?msg=" + encodeURIComponent("Created in the review queue."));
+    await client.from("news_events").insert({
+      article_id: data.id,
+      article_slug: data.slug,
+      actor,
+      action: "created",
+    });
+  }
+  redirect("/admin/news?msg=" + encodeURIComponent(`Created ${articles.length} review draft${articles.length === 1 ? "" : "s"}.`));
 }
 
 export async function saveArticle(id: string, form: FormData) {
